@@ -4,251 +4,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Catálogo · Dilan Home</title>
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
---brown:#5a4a3a;--brown-light:#6b5b45;--gold:#b8986a;--bg:#f9f6f2;--bg-card:#fff;
---bg-tag:#f5f0ea;--border:#e8ddd0;--border-soft:#ede8e0;--text:#333;--text-dark:#3a2e24;
---text-muted:#999;--text-light:#aaa;--red:#c0392b;--green-bg:#eaf7ea;--green-text:#2e7d32;--red-bg:#fdecea;
+  --ink:#1a1a1a;--ink-2:#545454;--ink-3:#767676;
+  --white:#fff;--soft:#f5f4f2;--line:#dcdcd8;--line-2:#ebebe8;--hover:#faf9f7;
+  --brown:#5c4535;--brown-2:#463427;
+  --teal:#1eb4b1;--teal-dark:#0e8784;
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --r:4px;
 }
-body{font-family:'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.logo{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--brown);text-decoration:none}
-.logo span{color:var(--gold)}
-.header-right{display:flex;align-items:center;gap:12px}
-.header-tag{font-size:11px;color:var(--text-light);background:var(--bg-tag);padding:4px 12px;border-radius:20px;letter-spacing:.5px}
-.btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--bg-tag);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--brown);cursor:pointer;transition:all .2s}
-.btn-refresh:hover{background:var(--border);border-color:var(--gold)}
-.btn-refresh svg{transition:transform .4s}
-.btn-refresh.spinning svg{animation:spin .7s linear infinite}
+/* Escala de antigüedad del precio y de stock: son los únicos colores fuertes de la página. */
+.a-ok{--strip:#2e9e5b;--tint:#e1f2e7;--tone:#1b6a3b}
+.a-mid{--strip:#e2b400;--tint:#fbf0c9;--tone:#745600}
+.a-warn{--strip:#e8762b;--tint:#fce3cf;--tone:#a94908}
+.a-old{--strip:#d64545;--tint:#fadada;--tone:#a52121}
+.a-vold{--strip:#8e1b1b;--tint:#8e1b1b;--tone:#fff}
+.a-none{--strip:#dcdcd8;--tint:#efeeec;--tone:#626262}
+.s-ok{--tint:#e1f2e7;--tone:#1b6a3b}
+.s-low{--tint:#fbf0c9;--tone:#745600}
+.s-no{--tint:#efeeec;--tone:#626262}
+
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);font-size:14.5px;line-height:1.45;color:var(--ink);background:var(--white);min-height:100vh;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* Franja negra, como la de la tienda */
+.strip{background:#000;color:rgba(255,255,255,.86);font-size:12.5px}
+.strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:34px}
+.st{display:flex;gap:14px;color:rgba(255,255,255,.7)}
+
+/* Encabezado */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:14px}
+.brand{display:flex;align-items:center;text-decoration:none}
+/* El logo viene con margen transparente: se recorta a su contenido (315×45 dentro de 359×144). */
+.logo{--s:.7;display:block;position:relative;overflow:hidden;flex:none;width:calc(315px*var(--s));height:calc(45px*var(--s))}
+.logo img{position:absolute;max-width:none;height:auto;width:calc(359px*var(--s));left:calc(-21px*var(--s));top:calc(-46px*var(--s))}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:var(--brown);border:1px solid var(--brown);border-radius:var(--r);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--brown-2)}
+.btn:focus-visible,.chip:focus-visible,select:focus-visible,.modal-close:focus-visible{outline:2px solid var(--teal-dark);outline-offset:2px}
+.btn svg{transition:transform .4s}
+.btn.spinning svg{animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.update-bar{background:#f0f7ff;border-bottom:1px solid #cce0f5;padding:6px 28px;font-size:11px;color:#1565c0;display:none;align-items:center;gap:6px}
-.toolbar{background:var(--bg-card);padding:14px 28px;border-bottom:1px solid var(--border-soft);display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:53px;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-.search-wrap{position:relative;flex:1;min-width:200px;max-width:380px}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none}
-#search{width:100%;padding:9px 12px 9px 34px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;transition:border .2s,box-shadow .2s}
-#search:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,152,106,.12)}
-.selects{display:flex;gap:8px;flex-wrap:wrap}
-select{padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:var(--bg-card);cursor:pointer;outline:none;color:var(--text);transition:border .2s}
-select:focus{border-color:var(--gold)}
-.result-count{font-size:12px;color:var(--text-muted);margin-left:auto;white-space:nowrap}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:22px 28px;max-width:1440px;margin:0 auto}
-.card{background:var(--bg-card);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;border:1px solid transparent}
-.card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12);border-color:var(--border)}
-.card-thumb{height:48px;background:linear-gradient(135deg,var(--brown) 0%,var(--brown-light) 100%);display:flex;align-items:center;justify-content:center}
-.card-thumb-icon{font-size:20px;opacity:.45}
-.card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:4px}
-.card-rubro{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
-.card-name{font-size:13px;font-weight:600;color:var(--text-dark);line-height:1.4;flex:1;margin-top:2px}
-.card-sku{font-size:10px;color:var(--text-light);margin-top:2px}
-.card-footer{padding:0 14px 14px;display:flex;align-items:center;justify-content:space-between}
-.card-price{font-size:18px;font-weight:700;color:var(--brown)}
-.card-stock{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600}
-.stock-ok{background:var(--green-bg);color:var(--green-text)}
-.stock-low{background:#fff8e1;color:#e65100}
-.stock-no{background:var(--red-bg);color:var(--red)}
-.card-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
-.age-ok{background:#eaf7ea;color:#2e7d32}
-.age-mid{background:#fff8e1;color:#8a6d00}
-.age-warn{background:#ffe9d6;color:#d35400}
-.age-old{background:#fdecea;color:#c0392b}
-.age-vold{background:#c0392b;color:#fff}
-.age-legend{display:inline-flex;align-items:center;gap:8px;margin-left:10px;flex-wrap:wrap}
-.age-legend span{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
-.state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text-muted)}
-.state-icon{font-size:40px;margin-bottom:14px}
-.state h3{font-size:18px;color:var(--brown);margin-bottom:6px}
-.state p{font-size:14px}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
-/* ── MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(30,20,10,.65);z-index:500;overflow-y:auto;padding:32px 16px}
+
+/* Buscador: es lo primero que se usa, por eso queda fijo arriba */
+.finder{position:sticky;top:0;z-index:50;background:var(--white);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);padding:10px 0}
+.finder .wrap{display:flex;align-items:center;gap:16px}
+.search{position:relative;flex:1}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--ink-3);pointer-events:none}
+#search{width:100%;height:48px;padding:0 16px 0 46px;border:1px solid var(--line);border-radius:var(--r);background:var(--white);font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s}
+#search:focus{border-color:var(--teal-dark);box-shadow:0 0 0 3px rgba(30,180,177,.25)}
+#search::placeholder{color:var(--ink-3)}
+.count{font-size:13px;color:var(--ink-2);white-space:nowrap}
+
+/* Filtros */
+.filters{display:flex;flex-wrap:wrap;gap:10px 8px;align-items:center;padding:16px 0}
+select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-radius:var(--r);appearance:none;cursor:pointer;font-size:14px;max-width:100%;
+  background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23545454' stroke-width='3'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex-basis:100%;margin-top:4px}
+.chips[hidden]{display:none}
+.chips-k{font-size:13px;color:var(--ink-2);margin-right:4px}
+.chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);background:var(--white);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;transition:border-color .15s}
+.chip:hover{border-color:var(--ink-2)}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--strip)}
+.chip b{font-weight:700}
+.chip[aria-pressed=true]{background:var(--brown);border-color:var(--brown);color:#fff}
+.chip[aria-pressed=true] i{box-shadow:0 0 0 2px #fff}
+
+/* Lista */
+.list{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:48px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 96px 156px 116px;gap:8px 16px;align-items:center;padding:10px 18px 10px 22px;background:var(--soft);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2);font-weight:500}
+.cols span:last-child{text-align:right}
+.row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) 96px 156px 116px;gap:8px 16px;align-items:center;width:100%;
+  padding:12px 18px 12px 22px;cursor:pointer;border-bottom:1px solid var(--line-2);box-shadow:inset 6px 0 0 var(--strip,#dcdcd8);transition:background .12s}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--hover)}
+.row:focus-visible{outline:2px solid var(--teal-dark);outline-offset:-2px;background:var(--hover)}
+.c-name{display:block;min-width:0}
+.name{display:block;font-weight:600;font-size:14.5px;line-height:1.3}
+.meta{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:4px;font-size:12.5px;color:var(--ink-3)}
+.sku{font-weight:600;color:var(--ink-2)}
+.c-price{text-align:right;font-weight:800;font-size:22px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:600;line-height:1;padding:5px 9px;border-radius:999px;background:var(--tint);color:var(--tone);white-space:nowrap}
+.muted{font-size:13px;color:var(--ink-3)}
+
+/* Estados */
+.state{padding:72px 20px;text-align:center;color:var(--ink-2)}
+.state h3{font-size:18px;color:var(--ink);margin-bottom:6px}
+.state p{font-size:14px;max-width:46ch;margin:0 auto}
+.state .btn{margin-top:18px}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+
+/* Detalle del producto */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto;padding:32px 16px}
 .overlay.open{display:flex;align-items:flex-start;justify-content:center}
-.modal{background:var(--bg-card);border-radius:16px;max-width:820px;width:100%;padding:32px;position:relative;animation:rise .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.modal-close{position:absolute;top:14px;right:18px;font-size:24px;cursor:pointer;color:var(--text-light);background:none;border:none;line-height:1;transition:color .15s;padding:4px 8px;border-radius:6px}
-.modal-close:hover{color:var(--text);background:var(--bg-tag)}
-.modal-header{display:flex;gap:20px;margin-bottom:24px}
-.modal-thumb{width:100px;height:100px;min-width:100px;border-radius:12px;background:linear-gradient(135deg,var(--brown) 0%,var(--brown-light) 100%);display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.5}
-.modal-info{flex:1}
-.modal-rubro{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:6px}
-.modal-title{font-size:20px;font-weight:700;color:var(--text-dark);line-height:1.35;margin-bottom:10px}
-.modal-tags{display:flex;gap:8px;flex-wrap:wrap}
-.modal-tag{font-size:11px;background:var(--bg-tag);padding:4px 10px;border-radius:20px;color:#777}
-.price-section{margin:20px 0 0}
-.price-main-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px}
-.price-main-value{font-size:34px;font-weight:700;color:var(--brown);line-height:1}
-/* acordeón */
-.price-accordion{margin-top:14px;border:1px solid var(--border-soft);border-radius:10px;overflow:hidden}
-.price-accordion-toggle{width:100%;background:var(--bg-tag);border:none;cursor:pointer;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--brown);transition:background .15s}
-.price-accordion-toggle:hover{background:#ede8da}
-.price-accordion-toggle svg{transition:transform .2s}
-.price-accordion-toggle.open svg{transform:rotate(180deg)}
-.price-list{display:none}
-.price-list.open{display:block}
-.price-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid var(--border-soft)}
-.price-row-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.price-row-label{font-size:13px;color:var(--text)}
-.price-row-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600}
-.badge-blue{background:#e8f4fd;color:#1565c0}
-.badge-green{background:#e8f7ed;color:#1b5e20}
-.badge-orange{background:#fff3e0;color:#e65100}
-.badge-purple{background:#f3e5f5;color:#6a1b9a}
-.badge-gray{background:#f5f5f5;color:#555}
-.price-row-value{font-size:15px;font-weight:700;color:var(--text-dark);white-space:nowrap}
-/* stock */
-.modal-stock-row{display:flex;align-items:center;gap:10px;margin-top:18px}
-.modal-stock-label{font-size:13px;color:var(--text-muted)}
-.modal-stock-value{font-size:15px;font-weight:700;color:var(--brown)}
-.modal-divider{border:none;border-top:1px solid var(--border-soft);margin:18px 0}
-.modal-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px}
-.modal-data-item dt{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:2px}
-.modal-data-item dd{font-size:13px;font-weight:600;color:var(--text-dark)}
-@media(max-width:600px){
-header{padding:12px 16px}.header-tag{display:none}
-.toolbar{padding:10px 16px;top:49px}
-.grid{padding:16px;gap:12px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
-.modal{padding:20px}.modal-header{flex-direction:column;gap:12px}
-.price-main-value{font-size:26px}.modal-data-grid{grid-template-columns:1fr}
+.modal{position:relative;background:var(--white);border-radius:8px;max-width:640px;width:100%;padding:28px 28px 24px;animation:rise .2s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.modal-close{position:absolute;top:12px;right:12px;width:40px;height:40px;display:grid;place-items:center;background:none;border:none;border-radius:var(--r);cursor:pointer;color:var(--ink-2)}
+.modal-close:hover{background:var(--soft)}
+.m-cat{font-size:13px;color:var(--ink-3);padding-right:44px}
+.m-title{font-size:21px;font-weight:700;line-height:1.25;margin:4px 44px 12px 0}
+.m-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:12.5px;font-weight:500;padding:5px 10px;border-radius:var(--r);background:var(--soft);color:var(--ink-2)}
+.m-price{margin-top:22px}
+.m-price-k{font-size:13px;color:var(--ink-2)}
+.m-price-v{font-weight:800;font-size:46px;line-height:1.1;letter-spacing:-.03em}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.fact{background:var(--soft);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.fact.a-ok,.fact.a-mid,.fact.a-warn,.fact.a-old,.fact.a-vold{box-shadow:inset 5px 0 0 var(--strip);padding-left:18px}
+.fact-k{font-size:12.5px;color:var(--ink-2)}
+.fact-v{font-size:16px;font-weight:700}
+.m-lists{margin-top:22px}
+.m-lists h3{font-size:14px;font-weight:700;margin-bottom:6px}
+.lrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line-2)}
+.lrow-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lrow-pct{font-size:12px;font-weight:700;padding:3px 7px;border-radius:var(--r);background:var(--soft);color:var(--ink-2)}
+.lrow-v{font-weight:700;font-size:17px;white-space:nowrap}
+
+@media(max-width:720px){
+  .wrap{padding:0 14px}
+  .st-hora{display:none}
+  .top{padding-top:12px;padding-bottom:12px}
+  .logo{--s:.6}
+  .finder .wrap{gap:10px}
+  .count{display:none}
+  .cols{display:none}
+  .row{grid-template-columns:auto auto 1fr;grid-template-areas:"name name name" "stock age price";gap:10px 8px;padding:12px 14px 12px 18px}
+  .c-name{grid-area:name}.c-stock{grid-area:stock}.c-age{grid-area:age}.c-price{grid-area:price;font-size:22px}
+  .filters{gap:8px;padding:12px 0}
+  #rubroFilter{flex:1 1 100%}
+  #subRubroFilter{flex:1 1 0;min-width:0}
+  #stockFilter{flex:0 0 118px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;margin:4px -14px 0;padding:2px 14px 4px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chips-k{display:none}
+  .chip{flex:none}
+  .overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:12px 12px 0 0;max-width:none;padding:22px 18px 20px;max-height:92vh;overflow-y:auto}
+  .m-price-v{font-size:40px}
+  .facts{grid-template-columns:1fr}
 }
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<header>
-  <a class="logo" href="#">DILAN <span>HOME</span></a>
-  <div class="header-right">
-    <span class="header-tag">Catálogo interno</span>
-    <button class="btn-refresh" id="btnRefresh" title="Actualizar datos">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-      </svg>
-      Actualizar
-    </button>
+<div class="strip">
+  <div class="wrap">
+    <span>Catálogo interno</span>
+    <span class="st" id="status" aria-live="polite"></span>
   </div>
-</header>
-
-<div class="update-bar" id="updateBar">
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-  <span id="updateBarText"></span>
-  <span class="age-legend" id="ageLegend" style="display:none">Días sin actualizar el precio:
-    <span class="age-ok">hasta 30</span><span class="age-mid">31–90</span><span class="age-warn">91–180</span><span class="age-old">181–365</span><span class="age-vold">más de 365</span>
-  </span>
 </div>
 
-<div class="toolbar">
-  <div class="search-wrap">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" id="search" placeholder="Buscar por nombre, SKU o código de barras…" autocomplete="off">
+<header class="wrap top">
+  <a class="brand" href="./"><span class="logo"><img src="logo.webp" alt="Dilan Home" width="359" height="144"></span></a>
+  <button class="btn" id="btnRefresh" type="button" title="Volver a leer la planilla">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+    Actualizar
+  </button>
+</header>
+
+<div class="finder">
+  <div class="wrap">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="search" placeholder="Buscar por nombre, SKU o código de barras" autocomplete="off" aria-label="Buscar productos">
+    </div>
+    <span class="count" id="resultCount"></span>
   </div>
-  <div class="selects">
-    <select id="rubroFilter"><option value="">Todos los rubros</option></select>
-    <select id="subRubroFilter"><option value="">Todos los sub-rubros</option></select>
-    <select id="stockFilter">
+</div>
+
+<main class="wrap">
+  <div class="filters">
+    <select id="rubroFilter" aria-label="Rubro"><option value="">Todos los rubros</option></select>
+    <select id="subRubroFilter" aria-label="Sub-rubro"><option value="">Todos los sub-rubros</option></select>
+    <select id="stockFilter" aria-label="Stock">
       <option value="">Todo el stock</option>
       <option value="con">Con stock</option>
       <option value="sin">Sin stock</option>
     </select>
+    <div class="chips" id="chips" hidden></div>
   </div>
-  <span class="result-count" id="resultCount"></span>
-</div>
 
-<div class="grid" id="grid">
-  <div class="state">
-    <div class="spinner"></div>
-    <h3>Cargando productos…</h3>
-    <p>Conectando con la planilla de Google Sheets</p>
+  <div class="list" id="list">
+    <div class="state">
+      <div class="spinner"></div>
+      <h3>Cargando productos</h3>
+      <p>Leyendo la planilla de Google Sheets.</p>
+    </div>
   </div>
-</div>
+</main>
 
-<!-- MODAL -->
-<div class="overlay" id="overlay" role="dialog" aria-modal="true">
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modal" id="modal">
-    <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
-    <div class="modal-header">
-      <div class="modal-thumb">🏠</div>
-      <div class="modal-info">
-        <div class="modal-rubro" id="modalRubro"></div>
-        <div class="modal-title" id="modalTitle"></div>
-        <div class="modal-tags" id="modalTags"></div>
+    <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="m-cat" id="mCat"></div>
+    <h2 class="m-title" id="mTitle"></h2>
+    <div class="m-tags" id="mTags"></div>
+
+    <div class="m-price">
+      <div class="m-price-k">Efectivo, débito o transferencia</div>
+      <div class="m-price-v" id="mPrice"></div>
+    </div>
+
+    <div class="facts">
+      <div class="fact" id="mStockFact">
+        <span class="fact-k">Stock disponible</span>
+        <span class="fact-v" id="mStock"></span>
+      </div>
+      <div class="fact" id="mAgeFact" style="display:none">
+        <span class="fact-k">Último cambio de precio</span>
+        <span class="fact-v" id="mAge"></span>
+        <span class="pill" id="mAgePill"></span>
       </div>
     </div>
 
-    <div class="price-section">
-      <div class="price-main-label">Efectivo / Débito / Transferencia</div>
-      <div class="price-main-value" id="modalPriceFinal"></div>
+    <div class="m-lists">
+      <h3>Listas de precio</h3>
+      <div id="mLists"></div>
     </div>
-
-    <div class="price-accordion" style="margin-top:14px">
-      <button class="price-accordion-toggle" id="priceToggle" type="button">
-        Ver todas las listas de precios
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="price-list" id="priceList">
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">Efectivo / Débito / Transf.</span>
-            <span class="price-row-badge badge-gray">0%</span>
-          </div>
-          <span class="price-row-value" id="pr0"></span>
-        </div>
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">3 Cuotas – Cuota Simple</span>
-            <span class="price-row-badge badge-green">+10%</span>
-          </div>
-          <span class="price-row-value" id="pr1"></span>
-        </div>
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">Cuotas MyPime 6</span>
-            <span class="price-row-badge badge-blue">+20%</span>
-          </div>
-          <span class="price-row-value" id="pr2"></span>
-        </div>
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">Ahoramis &amp; 6 Cuotas</span>
-            <span class="price-row-badge badge-blue">+20%</span>
-          </div>
-          <span class="price-row-value" id="pr3"></span>
-        </div>
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">Naranja 12 / Santander 9</span>
-            <span class="price-row-badge badge-orange">+25%</span>
-          </div>
-          <span class="price-row-value" id="pr4"></span>
-        </div>
-
-        <div class="price-row">
-          <div class="price-row-left">
-            <span class="price-row-label">20 Cuotas BNA – 12 Santander</span>
-            <span class="price-row-badge badge-purple">+30%</span>
-          </div>
-          <span class="price-row-value" id="pr5"></span>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="modal-stock-row">
-      <span class="modal-stock-label">Stock disponible:</span>
-      <span class="modal-stock-value" id="modalStock"></span>
-      <span class="card-stock" id="modalStockBadge"></span>
-    </div>
-    <div class="modal-stock-row" id="modalPriceAgeRow" style="display:none">
-      <span class="modal-stock-label">Último cambio de precio:</span>
-      <span class="modal-stock-value" id="modalPriceAge"></span>
-      <span class="card-stock" id="modalPriceAgeBadge"></span>
-    </div>
-    <hr class="modal-divider">
-    <dl class="modal-data-grid" id="modalDataGrid"></dl>
   </div>
 </div>
 
@@ -256,13 +240,34 @@ header{padding:12px 16px}.header-tag{display:none}
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQInUzqyK50IvoSV37PTvLgagkWmNdT27euwiwia7MY76hwM2bcFOqFp7fylsFxpA/pub?output=csv';
 
 // Planilla aparte con la fecha del último cambio de precio por SKU (Ultima_Actualizacion_Precios, publicada como CSV).
-// Si está vacía o falla, el catálogo funciona igual, solo que sin la etiqueta de días.
+// Si está vacía o falla, el catálogo funciona igual, solo que sin los días.
 const FECHAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWLbOoZcCNkN1cWQoZ1YgptTSzKFSNZapK5zkBzV5LNbthDedEs1mR10NKo8jmeQ/pub?output=csv';
 
 const COL_SKU=1, COL_NAME=3, COL_BAR=8, COL_PRICE=16, COL_STOCK=20, COL_RUBRO=23, COL_SUB=24;
 
+// Cada lista = recargo sobre el precio de contado.
+const LISTAS=[
+  ['3 Cuotas – Cuota Simple','+10%',1.10],
+  ['Cuotas MyPime 6','+20%',1.20],
+  ['Ahoramis & 6 Cuotas','+20%',1.20],
+  ['Naranja 12 / Santander 9','+25%',1.25],
+  ['20 Cuotas BNA – 12 Santander','+30%',1.30]
+];
+
+const BUCKETS=[
+  {k:'ok',max:30,label:'Hasta 30 días'},
+  {k:'mid',max:90,label:'31 a 90'},
+  {k:'warn',max:180,label:'91 a 180'},
+  {k:'old',max:365,label:'181 a 365'},
+  {k:'vold',max:Infinity,label:'Más de 365'}
+];
+const bucket=n=>BUCKETS.find(b=>n<=b.max).k;
+
 const ars = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
 const fmt = n => isNaN(n) ? '—' : ars.format(n);
+const nf = new Intl.NumberFormat('es-AR');
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
 
 function parseCSV(text){
   const rows=[];let row=[],field='',inQ=false,i=0;
@@ -293,7 +298,7 @@ function parseNum(s){
     : parseFloat(c.replace(/,/g,''));
 }
 
-let allProducts=[];
+let allProducts=[], hasFechas=false, ageFilter='', lastFocus=null;
 
 // ---- Días sin actualizar el precio ----
 function parseFecha(s){
@@ -326,35 +331,22 @@ function diasDesde(d){
   const hoy=new Date();hoy.setHours(0,0,0,0);
   return Math.max(0,Math.round((hoy-d)/86400000));
 }
-function ageClass(n){
-  if(n<=30)return'age-ok';
-  if(n<=90)return'age-mid';
-  if(n<=180)return'age-warn';
-  if(n<=365)return'age-old';
-  return'age-vold';
-}
 const fmtFecha=d=>d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
-function ageBadge(p){
-  if(p.dias==null)return'';
-  const tip=`Último cambio de precio: ${fmtFecha(p.fechaPrecio)} (hace ${p.dias} días)`;
-  return`<span class="card-stock ${ageClass(p.dias)}" title="${tip}">Precio: ${p.dias===0?'hoy':p.dias+' d'}</span>`;
-}
+const ageKey=p=>p.dias==null?'none':bucket(p.dias);
+function ageShort(n){return n===0?'Precio de hoy':n===1?'Precio hace 1 día':`Precio hace ${nf.format(n)} d`;}
+function ageLong(n){return n===0?'Hoy':n===1?'Hace 1 día':`Hace ${nf.format(n)} días`;}
 
 async function loadData(isRefresh=false){
-  const btn=document.getElementById('btnRefresh');
+  const btn=$('btnRefresh');
   btn.classList.add('spinning');
   if(!isRefresh){
-    document.getElementById('grid').innerHTML=`
-      <div class="state"><div class="spinner"></div>
-      <h3>Cargando productos…</h3>
-      <p>Conectando con la planilla de Google Sheets</p></div>`;
+    $('list').innerHTML=`<div class="state"><div class="spinner"></div><h3>Cargando productos</h3><p>Leyendo la planilla de Google Sheets.</p></div>`;
   }
   try{
     const [res,fechas]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas()]);
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const text=await res.text();
-    const rows=parseCSV(text);
-    if(rows.length<2)throw new Error('Planilla vacía');
+    const rows=parseCSV(await res.text());
+    if(rows.length<2)throw new Error('La planilla está vacía');
     const products=[];
     for(let r=1;r<rows.length;r++){
       const row=rows[r];
@@ -365,40 +357,34 @@ async function loadData(isRefresh=false){
       const stock=parseNum(row[COL_STOCK]);
       const fp=fechas?fechas.get(row[COL_SKU]||''):null;
       products.push({
+        i:products.length,
         fechaPrecio:fp||null, dias:fp?diasDesde(fp):null,
         name, sku:row[COL_SKU]||'', barcode:row[COL_BAR]||'',
         price:isNaN(price)?0:price,
         stock:isNaN(stock)?0:Math.round(stock),
-        rubro:row[COL_RUBRO]||'', sub:row[COL_SUB]||'', raw:row
+        rubro:row[COL_RUBRO]||'', sub:row[COL_SUB]||''
       });
     }
     allProducts=products;
-    const now=new Date();
-    const fecha=now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
-    const hora=now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-    const bar=document.getElementById('updateBar');
-    document.getElementById('updateBarText').textContent=
-      `Última actualización: ${fecha} ${hora} · ${products.length} productos cargados`;
-    bar.style.display='flex';
-    document.getElementById('ageLegend').style.display=fechas?'inline-flex':'none';
-    if(isRefresh) buildFilters(true);
-    else buildFilters(false);
+    hasFechas=!!fechas;
+    if(!hasFechas)ageFilter='';
+    const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    $('status').innerHTML=`<span class="st-hora">Datos leídos a las ${hora}</span><span>${nf.format(products.length)} productos</span>`;
+    buildFilters(isRefresh);
     render();
   }catch(e){
-    document.getElementById('grid').innerHTML=`
-      <div class="state"><div class="state-icon">⚠️</div>
-      <h3>No se pudo cargar la planilla</h3>
-      <p>${e.message}<br><br>Verificá que la planilla esté publicada públicamente en Google Sheets.</p></div>`;
+    $('list').innerHTML=`<div class="state"><h3>No se pudo cargar la planilla</h3>
+      <p>${esc(e.message)}. Revisá la conexión y que la planilla siga publicada en Google Sheets.</p>
+      <button class="btn" type="button" id="btnRetry">Volver a intentar</button></div>`;
+    $('btnRetry').addEventListener('click',()=>loadData());
   }finally{
     btn.classList.remove('spinning');
   }
 }
 
 function buildFilters(preserve=false){
-  const rSel=document.getElementById('rubroFilter');
-  const sSel=document.getElementById('subRubroFilter');
-  const prevRubro=preserve?rSel.value:'';
-  const prevSub=preserve?sSel.value:'';
+  const rSel=$('rubroFilter'), sSel=$('subRubroFilter');
+  const prevRubro=preserve?rSel.value:'', prevSub=preserve?sSel.value:'';
   const rubros=[...new Set(allProducts.map(p=>p.rubro).filter(Boolean))].sort();
   rSel.innerHTML='<option value="">Todos los rubros</option>';
   rubros.forEach(r=>{const o=new Option(r,r);if(r===prevRubro)o.selected=true;rSel.appendChild(o);});
@@ -407,18 +393,41 @@ function buildFilters(preserve=false){
   subs.forEach(s=>{const o=new Option(s,s);if(s===prevSub)o.selected=true;sSel.appendChild(o);});
 }
 
-function stockClass(n){
-  if(n<=0)return['stock-no','Sin stock'];
-  if(n<=3)return['stock-low',`Stock: ${n}`];
-  return['stock-ok',`Stock: ${n}`];
+function stockInfo(n){
+  if(n<=0)return['s-no','Sin stock'];
+  if(n<=3)return['s-low',`Stock ${n}`];
+  return['s-ok',`Stock ${n}`];
+}
+
+function renderChips(counts){
+  const el=$('chips');
+  if(!hasFechas){el.hidden=true;return;}
+  el.hidden=false;
+  const chip=(k,label,cls)=>`<button type="button" class="chip ${cls}" data-age="${k}" aria-pressed="${ageFilter===k}"><i></i>${label} <b>${nf.format(counts[k])}</b></button>`;
+  el.innerHTML=`<span class="chips-k">Precio sin cambios desde</span>`
+    +BUCKETS.map(b=>chip(b.k,b.label,'a-'+b.k)).join('')
+    +(counts.none?chip('none','Sin fecha','a-none'):'');
+}
+
+function rowHtml(p){
+  const [sc,sl]=stockInfo(p.stock);
+  const a=p.dias==null?'a-none':'a-'+bucket(p.dias);
+  const cat=[p.rubro,p.sub].filter(Boolean).join(' › ');
+  const age=p.dias==null
+    ? '<span class="muted" title="Sin fecha de último cambio de precio">—</span>'
+    : `<span class="pill ${a}" title="Último cambio de precio: ${fmtFecha(p.fechaPrecio)}">${ageShort(p.dias)}</span>`;
+  return `<button type="button" class="row ${a}" data-i="${p.i}">
+    <span class="c-name"><span class="name">${esc(p.name)}</span><span class="meta">${p.sku?`<span class="sku">${esc(p.sku)}</span>`:''}${cat?`<span class="cat">${esc(cat)}</span>`:''}</span></span>
+    <span class="c-stock"><span class="pill ${sc}">${sl}</span></span>
+    <span class="c-age">${age}</span>
+    <span class="c-price">${fmt(p.price)}</span>
+  </button>`;
 }
 
 function render(){
-  const q=document.getElementById('search').value.toLowerCase().trim();
-  const rubro=document.getElementById('rubroFilter').value;
-  const sub=document.getElementById('subRubroFilter').value;
-  const stock=document.getElementById('stockFilter').value;
-  const filtered=allProducts.filter(p=>{
+  const q=$('search').value.toLowerCase().trim();
+  const rubro=$('rubroFilter').value, sub=$('subRubroFilter').value, stock=$('stockFilter').value;
+  const base=allProducts.filter(p=>{
     if(q&&!p.name.toLowerCase().includes(q)&&!p.sku.toLowerCase().includes(q)&&!p.barcode.includes(q))return false;
     if(rubro&&p.rubro!==rubro)return false;
     if(sub&&p.sub!==sub)return false;
@@ -426,101 +435,87 @@ function render(){
     if(stock==='sin'&&p.stock>0)return false;
     return true;
   });
-  document.getElementById('resultCount').textContent=
-    filtered.length===allProducts.length
-      ?`${allProducts.length} productos`
-      :`${filtered.length} de ${allProducts.length}`;
-  const grid=document.getElementById('grid');
-  if(!filtered.length){
-    grid.innerHTML=`<div class="state"><div class="state-icon">🔍</div><h3>Sin resultados</h3><p>Probá con otro término o filtro.</p></div>`;
+  const counts={ok:0,mid:0,warn:0,old:0,vold:0,none:0};
+  base.forEach(p=>counts[ageKey(p)]++);
+  renderChips(counts);
+
+  let list=base;
+  if(ageFilter){
+    list=base.filter(p=>ageKey(p)===ageFilter);
+    if(ageFilter!=='none')list=[...list].sort((a,b)=>b.dias-a.dias);   // los más viejos primero
+  }
+  $('resultCount').textContent=list.length===allProducts.length
+    ? `${nf.format(allProducts.length)} productos`
+    : `${nf.format(list.length)} de ${nf.format(allProducts.length)}`;
+
+  const el=$('list');
+  if(!list.length){
+    el.innerHTML=`<div class="state"><h3>Sin resultados</h3><p>Probá con otra palabra, o sacá algún filtro.</p></div>`;
     return;
   }
-  grid.innerHTML=filtered.map(p=>{
-    const[sc,sl]=stockClass(p.stock);
-    const cat=[p.rubro,p.sub].filter(Boolean).join(' › ')||'&nbsp;';
-    return`<div class="card" onclick="openModal(${allProducts.indexOf(p)})">
-      <div class="card-thumb"><span class="card-thumb-icon">🏠</span></div>
-      <div class="card-body">
-        <div class="card-rubro">${cat}</div>
-        <div class="card-name">${p.name}</div>
-        <div class="card-sku">${p.sku?'SKU: '+p.sku:''}</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-price">${fmt(p.price)}</span>
-        <span class="card-badges"><span class="card-stock ${sc}">${sl}</span>${ageBadge(p)}</span>
-      </div>
-    </div>`;
-  }).join('');
+  el.innerHTML=`<div class="cols"><span>Producto</span><span>Stock</span><span>Último cambio de precio</span><span>Efectivo</span></div>`+list.map(rowHtml).join('');
 }
 
 function openModal(idx){
   const p=allProducts[idx];if(!p)return;
-  const cat=[p.rubro,p.sub].filter(Boolean).join(' › ');
-  document.getElementById('modalRubro').textContent=cat||'';
-  document.getElementById('modalTitle').textContent=p.name;
+  $('mCat').textContent=[p.rubro,p.sub].filter(Boolean).join(' › ');
+  $('mTitle').textContent=p.name;
   const tags=[];
-  if(p.sku)tags.push(`SKU: ${p.sku}`);
-  if(p.barcode)tags.push(`Cód. barras: ${p.barcode}`);
-  document.getElementById('modalTags').innerHTML=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
-  const b=p.price;
-  document.getElementById('modalPriceFinal').textContent=fmt(b);
-  document.getElementById('pr0').textContent=fmt(b);
-  document.getElementById('pr1').textContent=fmt(b*1.10);
-  document.getElementById('pr2').textContent=fmt(b*1.20);
-  document.getElementById('pr3').textContent=fmt(b*1.20);
-  document.getElementById('pr4').textContent=fmt(b*1.25);
-  document.getElementById('pr5').textContent=fmt(b*1.30);
-  const[sc,sl]=stockClass(p.stock);
-  document.getElementById('modalStock').textContent=p.stock>0?`${p.stock} unidades`:'0 unidades';
-  document.getElementById('modalStockBadge').textContent=sl;
-  document.getElementById('modalStockBadge').className=`card-stock ${sc}`;
-  const ageRow=document.getElementById('modalPriceAgeRow');
+  if(p.sku)tags.push(`SKU ${esc(p.sku)}`);
+  if(p.barcode)tags.push(`Código de barras ${esc(p.barcode)}`);
+  $('mTags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  $('mPrice').textContent=fmt(p.price);
+  const [sc,sl]=stockInfo(p.stock);
+  $('mStock').innerHTML=`${p.stock>0?nf.format(p.stock)+(p.stock===1?' unidad':' unidades'):'Sin stock'} <span class="pill ${sc}" style="margin-left:6px;vertical-align:2px">${sl}</span>`;
+  const ageFact=$('mAgeFact');
   if(p.dias!=null){
-    document.getElementById('modalPriceAge').textContent=fmtFecha(p.fechaPrecio);
-    const b=document.getElementById('modalPriceAgeBadge');
-    b.textContent=p.dias===0?'Hoy':`Hace ${p.dias} días`;
-    b.className=`card-stock ${ageClass(p.dias)}`;
-    ageRow.style.display='flex';
-  }else ageRow.style.display='none';
-  const extras=[];
-  if(p.rubro)extras.push(['Rubro',p.rubro]);
-  if(p.sub)extras.push(['Sub-Rubro',p.sub]);
-  if(p.sku)extras.push(['SKU',p.sku]);
-  if(p.barcode)extras.push(['Cód. Barras',p.barcode]);
-  document.getElementById('modalDataGrid').innerHTML=extras.map(([k,v])=>
-    `<div class="modal-data-item"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  document.getElementById('priceList').classList.remove('open');
-  document.getElementById('priceToggle').classList.remove('open');
-  document.getElementById('overlay').classList.add('open');
+    const a='a-'+bucket(p.dias);
+    ageFact.className='fact '+a;
+    $('mAge').textContent=fmtFecha(p.fechaPrecio);
+    const pill=$('mAgePill');pill.textContent=ageLong(p.dias);pill.className='pill '+a;
+    ageFact.style.display='';
+  }else ageFact.style.display='none';
+  $('mLists').innerHTML=LISTAS.map(([label,pct,mult])=>
+    `<div class="lrow"><div class="lrow-l"><span>${label}</span><span class="lrow-pct">${pct}</span></div><span class="lrow-v">${fmt(p.price*mult)}</span></div>`).join('');
+  $('overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  $('modal').scrollTop=0;
+  $('modalClose').focus({preventScroll:true});
 }
 
 function closeModal(){
-  document.getElementById('overlay').classList.remove('open');
+  $('overlay').classList.remove('open');
   document.body.style.overflow='';
+  if(lastFocus&&document.contains(lastFocus))lastFocus.focus({preventScroll:true});
 }
 
-document.getElementById('modalClose').addEventListener('click',closeModal);
-document.getElementById('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-document.getElementById('priceToggle').addEventListener('click',function(){
-  this.classList.toggle('open');
-  document.getElementById('priceList').classList.toggle('open');
+$('list').addEventListener('click',e=>{
+  const row=e.target.closest('.row');
+  if(!row)return;
+  lastFocus=row;
+  openModal(+row.dataset.i);
 });
+$('chips').addEventListener('click',e=>{
+  const c=e.target.closest('.chip');
+  if(!c)return;
+  ageFilter=ageFilter===c.dataset.age?'':c.dataset.age;
+  render();
+});
+$('modalClose').addEventListener('click',closeModal);
+$('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('overlay').classList.contains('open'))closeModal();});
 let deb;
-document.getElementById('search').addEventListener('input',()=>{clearTimeout(deb);deb=setTimeout(render,180);});
-document.getElementById('rubroFilter').addEventListener('change',()=>{
-  const rubro=document.getElementById('rubroFilter').value;
-  const sSel=document.getElementById('subRubroFilter');
-  const cur=sSel.value;
+$('search').addEventListener('input',()=>{clearTimeout(deb);deb=setTimeout(render,180);});
+$('rubroFilter').addEventListener('change',()=>{
+  const rubro=$('rubroFilter').value, sSel=$('subRubroFilter'), cur=sSel.value;
   const subs=[...new Set(allProducts.filter(p=>!rubro||p.rubro===rubro).map(p=>p.sub).filter(Boolean))].sort();
   sSel.innerHTML='<option value="">Todos los sub-rubros</option>';
   subs.forEach(s=>{const o=new Option(s,s);if(s===cur)o.selected=true;sSel.appendChild(o);});
   render();
 });
-document.getElementById('subRubroFilter').addEventListener('change',render);
-document.getElementById('stockFilter').addEventListener('change',render);
-document.getElementById('btnRefresh').addEventListener('click',()=>loadData(true));
+$('subRubroFilter').addEventListener('change',render);
+$('stockFilter').addEventListener('change',render);
+$('btnRefresh').addEventListener('click',()=>loadData(true));
 
 loadData();
 </script>
