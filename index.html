@@ -47,6 +47,14 @@ select:focus{border-color:var(--gold)}
 .stock-ok{background:var(--green-bg);color:var(--green-text)}
 .stock-low{background:#fff8e1;color:#e65100}
 .stock-no{background:var(--red-bg);color:var(--red)}
+.card-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.age-ok{background:#eaf7ea;color:#2e7d32}
+.age-mid{background:#fff8e1;color:#8a6d00}
+.age-warn{background:#ffe9d6;color:#d35400}
+.age-old{background:#fdecea;color:#c0392b}
+.age-vold{background:#c0392b;color:#fff}
+.age-legend{display:inline-flex;align-items:center;gap:8px;margin-left:10px;flex-wrap:wrap}
+.age-legend span{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
 .state{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text-muted)}
 .state-icon{font-size:40px;margin-bottom:14px}
 .state h3{font-size:18px;color:var(--brown);margin-bottom:6px}
@@ -123,6 +131,9 @@ header{padding:12px 16px}.header-tag{display:none}
 <div class="update-bar" id="updateBar">
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
   <span id="updateBarText"></span>
+  <span class="age-legend" id="ageLegend" style="display:none">Días sin actualizar el precio:
+    <span class="age-ok">hasta 30</span><span class="age-mid">31–90</span><span class="age-warn">91–180</span><span class="age-old">181–365</span><span class="age-vold">más de 365</span>
+  </span>
 </div>
 
 <div class="toolbar">
@@ -231,6 +242,11 @@ header{padding:12px 16px}.header-tag{display:none}
       <span class="modal-stock-value" id="modalStock"></span>
       <span class="card-stock" id="modalStockBadge"></span>
     </div>
+    <div class="modal-stock-row" id="modalPriceAgeRow" style="display:none">
+      <span class="modal-stock-label">Último cambio de precio:</span>
+      <span class="modal-stock-value" id="modalPriceAge"></span>
+      <span class="card-stock" id="modalPriceAgeBadge"></span>
+    </div>
     <hr class="modal-divider">
     <dl class="modal-data-grid" id="modalDataGrid"></dl>
   </div>
@@ -238,6 +254,10 @@ header{padding:12px 16px}.header-tag{display:none}
 
 <script>
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQInUzqyK50IvoSV37PTvLgagkWmNdT27euwiwia7MY76hwM2bcFOqFp7fylsFxpA/pub?output=csv';
+
+// Planilla aparte con la fecha del último cambio de precio por SKU (Ultima_Actualizacion_Precios, publicada como CSV).
+// Si está vacía o falla, el catálogo funciona igual, solo que sin la etiqueta de días.
+const FECHAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWLbOoZcCNkN1cWQoZ1YgptTSzKFSNZapK5zkBzV5LNbthDedEs1mR10NKo8jmeQ/pub?output=csv';
 
 const COL_SKU=1, COL_NAME=3, COL_BAR=8, COL_PRICE=16, COL_STOCK=20, COL_RUBRO=23, COL_SUB=24;
 
@@ -275,6 +295,51 @@ function parseNum(s){
 
 let allProducts=[];
 
+// ---- Días sin actualizar el precio ----
+function parseFecha(s){
+  s=(s||'').trim();
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);          // aaaa-mm-dd (columna "Fecha ISO")
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);        // dd/mm/aaaa
+  if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+  return null;
+}
+async function fetchFechas(){
+  if(!FECHAS_URL)return null;
+  try{
+    const res=await fetch(FECHAS_URL+(FECHAS_URL.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const rows=parseCSV(await res.text());
+    const h=rows[0].map(x=>x.toLowerCase());
+    const iSku=h.indexOf('sku'), iIso=h.indexOf('fecha iso'), iFecha=h.findIndex(x=>x.startsWith('ultima actualizacion'));
+    if(iSku<0||(iIso<0&&iFecha<0))throw new Error('columnas no encontradas');
+    const map=new Map();
+    for(let r=1;r<rows.length;r++){
+      const row=rows[r];
+      const d=parseFecha(row[iIso>=0?iIso:iFecha])||parseFecha(row[iFecha]);
+      if(row[iSku]&&d)map.set(row[iSku],d);
+    }
+    return map;
+  }catch(e){console.warn('No se pudo cargar las fechas de precio:',e.message);return null;}
+}
+function diasDesde(d){
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  return Math.max(0,Math.round((hoy-d)/86400000));
+}
+function ageClass(n){
+  if(n<=30)return'age-ok';
+  if(n<=90)return'age-mid';
+  if(n<=180)return'age-warn';
+  if(n<=365)return'age-old';
+  return'age-vold';
+}
+const fmtFecha=d=>d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+function ageBadge(p){
+  if(p.dias==null)return'';
+  const tip=`Último cambio de precio: ${fmtFecha(p.fechaPrecio)} (hace ${p.dias} días)`;
+  return`<span class="card-stock ${ageClass(p.dias)}" title="${tip}">Precio: ${p.dias===0?'hoy':p.dias+' d'}</span>`;
+}
+
 async function loadData(isRefresh=false){
   const btn=document.getElementById('btnRefresh');
   btn.classList.add('spinning');
@@ -285,7 +350,7 @@ async function loadData(isRefresh=false){
       <p>Conectando con la planilla de Google Sheets</p></div>`;
   }
   try{
-    const res=await fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'});
+    const [res,fechas]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas()]);
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const text=await res.text();
     const rows=parseCSV(text);
@@ -298,7 +363,9 @@ async function loadData(isRefresh=false){
       if(!name)continue;
       const price=parseNum(row[COL_PRICE]);
       const stock=parseNum(row[COL_STOCK]);
+      const fp=fechas?fechas.get(row[COL_SKU]||''):null;
       products.push({
+        fechaPrecio:fp||null, dias:fp?diasDesde(fp):null,
         name, sku:row[COL_SKU]||'', barcode:row[COL_BAR]||'',
         price:isNaN(price)?0:price,
         stock:isNaN(stock)?0:Math.round(stock),
@@ -313,6 +380,7 @@ async function loadData(isRefresh=false){
     document.getElementById('updateBarText').textContent=
       `Última actualización: ${fecha} ${hora} · ${products.length} productos cargados`;
     bar.style.display='flex';
+    document.getElementById('ageLegend').style.display=fechas?'inline-flex':'none';
     if(isRefresh) buildFilters(true);
     else buildFilters(false);
     render();
@@ -379,7 +447,7 @@ function render(){
       </div>
       <div class="card-footer">
         <span class="card-price">${fmt(p.price)}</span>
-        <span class="card-stock ${sc}">${sl}</span>
+        <span class="card-badges"><span class="card-stock ${sc}">${sl}</span>${ageBadge(p)}</span>
       </div>
     </div>`;
   }).join('');
@@ -406,6 +474,14 @@ function openModal(idx){
   document.getElementById('modalStock').textContent=p.stock>0?`${p.stock} unidades`:'0 unidades';
   document.getElementById('modalStockBadge').textContent=sl;
   document.getElementById('modalStockBadge').className=`card-stock ${sc}`;
+  const ageRow=document.getElementById('modalPriceAgeRow');
+  if(p.dias!=null){
+    document.getElementById('modalPriceAge').textContent=fmtFecha(p.fechaPrecio);
+    const b=document.getElementById('modalPriceAgeBadge');
+    b.textContent=p.dias===0?'Hoy':`Hace ${p.dias} días`;
+    b.className=`card-stock ${ageClass(p.dias)}`;
+    ageRow.style.display='flex';
+  }else ageRow.style.display='none';
   const extras=[];
   if(p.rubro)extras.push(['Rubro',p.rubro]);
   if(p.sub)extras.push(['Sub-Rubro',p.sub]);
