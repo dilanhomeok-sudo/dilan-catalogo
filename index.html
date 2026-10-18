@@ -15,6 +15,8 @@
   --white:#fff;--soft:#f5f4f2;--line:#dcdcd8;--line-2:#ebebe8;--hover:#faf9f7;
   --brown:#5c4535;--brown-2:#463427;
   --teal:#1eb4b1;--teal-dark:#0e8784;
+  --orange:#d9620f;   /* precio de lista: la lista principal */
+  --cash:#1a8a46;     /* precio en efectivo: verde dólar */
   --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --r:4px;
 }
@@ -32,7 +34,7 @@
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--font);font-size:14.5px;line-height:1.45;color:var(--ink);background:var(--white);min-height:100vh;font-variant-numeric:tabular-nums}
 button,input,select{font:inherit;color:inherit}
-.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 
 /* Franja negra, como la de la tienda */
 .strip{background:#000;color:rgba(255,255,255,.86);font-size:12.5px}
@@ -47,6 +49,10 @@ button,input,select{font:inherit;color:inherit}
 .logo img{position:absolute;max-width:none;height:auto;width:calc(359px*var(--s));left:calc(-21px*var(--s));top:calc(-46px*var(--s))}
 .btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;background:var(--brown);border:1px solid var(--brown);border-radius:var(--r);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .15s}
 .btn:hover{background:var(--brown-2)}
+.act{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.last-export{font-size:12px;line-height:1.3;color:var(--ink-3);text-align:right}
+.last-export b{font-weight:700;color:var(--ink-2)}
+.last-export.viejo b{color:#a94908}
 .btn:focus-visible,.chip:focus-visible,select:focus-visible,.modal-close:focus-visible{outline:2px solid var(--teal-dark);outline-offset:2px}
 .btn svg{transition:transform .4s}
 .btn.spinning svg{animation:spin .7s linear infinite}
@@ -78,9 +84,9 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
 
 /* Lista */
 .list{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:48px}
-.cols{display:grid;grid-template-columns:56px minmax(0,1fr) 96px 156px 116px;gap:8px 16px;align-items:center;padding:10px 18px 10px 22px;background:var(--soft);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2);font-weight:500}
-.cols span:last-child{text-align:right}
-.row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:56px minmax(0,1fr) 96px 156px 116px;gap:8px 16px;align-items:center;width:100%;
+.cols{display:grid;grid-template-columns:56px minmax(0,1fr) 96px 156px 250px 40px;gap:8px 16px;align-items:center;padding:10px 18px 10px 22px;background:var(--soft);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-2);font-weight:500}
+.h-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:right}
+.row{all:unset;box-sizing:border-box;display:grid;grid-template-columns:56px minmax(0,1fr) 96px 156px 250px 40px;gap:8px 16px;align-items:center;width:100%;
   padding:12px 18px 12px 22px;cursor:pointer;border-bottom:1px solid var(--line-2);box-shadow:inset 6px 0 0 var(--strip,#dcdcd8);transition:background .12s}
 .row:last-child{border-bottom:none}
 .row:hover{background:var(--hover)}
@@ -92,7 +98,16 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
 .name{display:block;font-weight:600;font-size:14.5px;line-height:1.3}
 .meta{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:4px;font-size:12.5px;color:var(--ink-3)}
 .sku{font-weight:600;color:var(--ink-2)}
-.c-price{text-align:right;font-weight:800;font-size:22px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+/* Dos precios por producto: el de lista (Ahoramis) manda, el efectivo va al lado */
+.c-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:right;align-items:baseline}
+.pv{display:block;min-width:0}
+.pv-k{display:none;font-size:11.5px;font-weight:500;color:var(--ink-3);margin-bottom:3px}
+.pv-list{display:block;font-weight:800;font-size:20px;line-height:1;letter-spacing:-.02em;white-space:nowrap;color:var(--orange)}
+.pv-cash{display:block;font-weight:700;font-size:15px;line-height:1;color:var(--cash);white-space:nowrap}
+.add{all:unset;box-sizing:border-box;position:relative;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--teal-dark);border-radius:var(--r);background:var(--white);color:var(--teal-dark);cursor:pointer;transition:background .15s,color .15s}
+.add:hover,.add.in{background:var(--teal-dark);color:#fff}
+.add:focus-visible{outline:2px solid var(--teal-dark);outline-offset:2px}
+.add b{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--brown);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-sizing:content-box;line-height:1}
 .pill{display:inline-block;font-size:12px;font-weight:600;line-height:1;padding:5px 9px;border-radius:999px;background:var(--tint);color:var(--tone);white-space:nowrap}
 .muted{font-size:13px;color:var(--ink-3)}
 
@@ -116,9 +131,83 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
 .m-title{font-size:21px;font-weight:700;line-height:1.25;margin:4px 44px 12px 0}
 .m-tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{font-size:12.5px;font-weight:500;padding:5px 10px;border-radius:var(--r);background:var(--soft);color:var(--ink-2)}
-.m-price{margin-top:22px}
+.m-prices{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 32px;margin-top:22px}
 .m-price-k{font-size:13px;color:var(--ink-2)}
 .m-price-v{font-weight:800;font-size:46px;line-height:1.1;letter-spacing:-.03em}
+#mPrice{color:var(--orange)}
+.m-cash{font-size:28px;font-weight:700;color:var(--cash)}
+.m-add{display:flex;align-items:center;gap:10px;margin-top:16px}
+.m-add .btn{flex:1;justify-content:center;height:44px}
+.btn-add{background:var(--teal-dark);border-color:var(--teal-dark)}
+.btn-add:hover{background:#0b6f6c}
+.btn-ghost{background:var(--white);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-ghost.danger{background:#fadada;border-color:#d64545;color:#a52121}
+.qty{display:inline-flex;align-items:center;flex:none;height:44px;border:1px solid var(--line);border-radius:var(--r);background:var(--white)}
+.qty button{all:unset;box-sizing:border-box;width:36px;height:100%;display:grid;place-items:center;font-size:20px;line-height:1;color:var(--ink-2);cursor:pointer}
+.qty button:hover{background:var(--soft)}
+.qty button:focus-visible{outline:2px solid var(--teal-dark);outline-offset:-2px}
+.qty input{width:46px;height:100%;border:0;background:transparent;text-align:center;font-weight:700;font-size:16px;outline:none;-moz-appearance:textfield}
+.qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qty input:focus{box-shadow:inset 0 0 0 2px var(--teal-dark)}
+
+/* Botón flotante del presupuesto */
+.fab{position:fixed;right:20px;bottom:20px;z-index:400;display:none;align-items:center;gap:10px;height:56px;padding:0 22px 0 16px;border:0;border-radius:999px;background:var(--brown);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.28);transition:background .15s}
+.fab.show{display:inline-flex}
+.fab:hover{background:var(--brown-2)}
+.fab:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.fab .n{min-width:26px;height:26px;padding:0 7px;border-radius:13px;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:13px}
+.fab .t{font-weight:600;opacity:.85}
+.fab.bump{animation:bump .32s ease-out}
+@keyframes bump{50%{transform:scale(1.09)}}
+body.has-fab .list{margin-bottom:104px}
+
+/* Panel del presupuesto */
+.cart-overlay{z-index:600;padding:0;overflow:hidden}
+.cart-overlay.open{justify-content:flex-end;align-items:stretch}
+.drawer{display:flex;flex-direction:column;width:min(500px,100%);height:100%;background:var(--white);box-shadow:-10px 0 40px rgba(0,0,0,.25);animation:slide .22s ease-out}
+@keyframes slide{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.d-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 14px}
+.d-head h2{font-size:19px;font-weight:700}
+.d-head small{display:block;font-size:12.5px;font-weight:500;color:var(--ink-3);margin-top:2px}
+.d-head .modal-close{position:static}
+.d-lista{padding:0 20px 14px;border-bottom:1px solid var(--line-2)}
+.d-lista label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-2);margin-bottom:6px}
+.d-lista select{width:100%;height:44px}
+/* Colores del desplegable: naranja = precio de lista, verde = efectivo */
+#cartLista option{color:var(--ink);font-weight:400}
+#cartLista option.o-lista,#cartLista[data-opt=lista]{color:var(--orange);font-weight:700}
+#cartLista option.o-cash,#cartLista[data-opt=cash]{color:var(--cash);font-weight:700}
+.drawer{overflow-y:auto}
+.d-head,.d-lista,.d-foot{flex:none}
+.d-items{flex:1 1 auto;min-height:120px;overflow-y:auto;padding:0 20px}
+.ci{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr);gap:6px 12px;padding:14px 0;border-bottom:1px solid var(--line-2)}
+.ci:last-child{border-bottom:none}
+.ci .thumb{width:52px;height:52px;grid-row:1/3}
+.ci-name{display:block;font-weight:600;font-size:14px;line-height:1.3;padding-right:32px}
+.ci-sub{display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:3px;font-size:12.5px;color:var(--ink-3)}
+.ci-warn{font-weight:600;color:#745600;background:#fbf0c9;border-radius:var(--r);padding:0 6px}
+.ci-foot{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ci-foot .qty{height:38px}
+.ci-line{font-size:17px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.ci-del{all:unset;box-sizing:border-box;position:absolute;top:8px;right:-8px;width:36px;height:36px;display:grid;place-items:center;color:var(--ink-3);border-radius:var(--r);cursor:pointer}
+.ci-del:hover{background:var(--soft);color:var(--ink)}
+.ci-del:focus-visible{outline:2px solid var(--teal-dark);outline-offset:-2px}
+.d-foot{padding:16px 20px calc(18px + env(safe-area-inset-bottom));background:var(--soft);border-top:1px solid var(--line)}
+.tot{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.tot-k{font-size:14px;color:var(--ink-2)}
+.tot-v{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.cuotas{margin-top:12px;padding:12px 14px;background:var(--white);border:1px solid var(--line);border-radius:var(--r)}
+.cuotas-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cuotas-row label{font-size:13.5px;font-weight:600}
+.cuotas-row select{min-width:130px}
+.cuotas-res{margin-top:10px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cuotas-res strong{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.cuotas-res span,.cuotas-note{font-size:13px;color:var(--ink-2)}
+.d-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.d-actions .btn{flex:1;justify-content:center}
+.btn-wa{flex:1 1 100%!important;height:46px;background:#128c7e;border-color:#128c7e}
+.btn-wa:hover{background:#0b6b5f}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .fact{background:var(--soft);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .fact.a-ok,.fact.a-mid,.fact.a-warn,.fact.a-old,.fact.a-vold{box-shadow:inset 5px 0 0 var(--strip);padding-left:18px}
@@ -139,10 +228,19 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
   .finder .wrap{gap:10px}
   .count{display:none}
   .cols{display:none}
-  .row{grid-template-columns:auto auto 1fr;grid-template-areas:"thumb name name" "stock age price";gap:10px 8px;padding:12px 14px 12px 18px}
+  .row{grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"thumb name name" "stock stock age" "prices prices add";gap:10px 8px;padding:12px 14px 12px 18px}
   .row>.thumb{grid-area:thumb;align-self:start}
   .m-img{height:210px}
-  .c-name{grid-area:name}.c-stock{grid-area:stock}.c-age{grid-area:age}.c-price{grid-area:price;font-size:22px}
+  .c-name{grid-area:name}.c-stock{grid-area:stock}.c-age{grid-area:age;justify-self:end}
+  .c-prices{grid-area:prices;grid-template-columns:auto auto;justify-content:start;gap:22px;text-align:left}
+  .pv-k{display:block}
+  .pv-list{font-size:22px}
+  .add{grid-area:add;justify-self:end}
+  .m-cash{font-size:26px}
+  .fab{right:14px;bottom:14px}
+  .cart-overlay.open{justify-content:center;align-items:flex-end}
+  .drawer{width:100%;height:auto;max-height:92vh;border-radius:12px 12px 0 0;animation:rise .22s ease-out}
+  .ci-del{right:-6px}
   .filters{gap:8px;padding:12px 0}
   #rubroFilter{flex:1 1 100%}
   #subRubroFilter{flex:1 1 0;min-width:0}
@@ -170,15 +268,17 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
 
 <header class="wrap top">
   <a class="brand" href="./"><span class="logo"><img src="logo.webp" alt="Dilan Home" width="359" height="144"></span></a>
-  <button class="btn" id="btnRefresh" type="button" title="Volver a leer la planilla">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-      <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-    </svg>
-    Actualizar
-  </button>
+  <div class="act">
+    <button class="btn" id="btnRefresh" type="button" title="Volver a leer la planilla">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Actualizar
+    </button>
+    <span class="last-export" id="lastExport"></span>
+  </div>
 </header>
-
 <div class="finder">
   <div class="wrap">
     <div class="search">
@@ -220,9 +320,24 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
     <h2 class="m-title" id="mTitle"></h2>
     <div class="m-tags" id="mTags"></div>
 
-    <div class="m-price">
-      <div class="m-price-k">Efectivo, débito o transferencia</div>
-      <div class="m-price-v" id="mPrice"></div>
+    <div class="m-prices">
+      <div>
+        <div class="m-price-k">Precio de lista</div>
+        <div class="m-price-v" id="mPrice"></div>
+      </div>
+      <div>
+        <div class="m-price-k">Efectivo, débito o transferencia</div>
+        <div class="m-price-v m-cash" id="mCash"></div>
+      </div>
+    </div>
+
+    <div class="m-add">
+      <div class="qty">
+        <button type="button" id="mQtyMinus" aria-label="Una unidad menos">−</button>
+        <input type="number" id="mQty" value="1" min="1" max="999" inputmode="numeric" aria-label="Cantidad">
+        <button type="button" id="mQtyPlus" aria-label="Una unidad más">+</button>
+      </div>
+      <button class="btn btn-add" id="mAdd" type="button">Agregar al presupuesto</button>
     </div>
 
     <div class="facts">
@@ -244,6 +359,39 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
   </div>
 </div>
 
+<button class="fab" id="fab" type="button" aria-label="Ver presupuesto"></button>
+
+<div class="overlay cart-overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <aside class="drawer" id="drawer">
+    <div class="d-head">
+      <div>
+        <h2 id="cartTitle">Presupuesto</h2>
+        <small id="cartCount"></small>
+      </div>
+      <button class="modal-close" id="cartClose" type="button" aria-label="Cerrar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="d-lista">
+      <label for="cartLista">Lista de precios</label>
+      <select id="cartLista"></select>
+    </div>
+    <div class="d-items" id="cartItems"></div>
+    <div class="d-foot" id="cartFoot" hidden>
+      <div class="tot"><span class="tot-k">Total</span><span class="tot-v" id="cartTotal"></span></div>
+      <div class="cuotas" id="cuotasBox"></div>
+      <div class="d-actions">
+        <button class="btn btn-wa" id="cartWa" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+          Enviar por WhatsApp
+        </button>
+        <button class="btn btn-ghost" id="cartClear" type="button">Vaciar</button>
+        <button class="btn btn-ghost" id="cartCopy" type="button">Copiar texto</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
 <script>
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQInUzqyK50IvoSV37PTvLgagkWmNdT27euwiwia7MY76hwM2bcFOqFp7fylsFxpA/pub?output=csv';
 
@@ -251,16 +399,29 @@ const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQInUzqyK50IvoS
 // Si está vacía o falla, el catálogo funciona igual, solo que sin los días.
 const FECHAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWLbOoZcCNkN1cWQoZ1YgptTSzKFSNZapK5zkBzV5LNbthDedEs1mR10NKo8jmeQ/pub?output=csv';
 
+// Fecha y hora de la última carga de Contabilium → planilla. La tarea programada de la otra PC escribe en la planilla,
+// y un Apps Script de la planilla (web app) devuelve cuándo se modificó por última vez. Vacío = todavía sin configurar.
+// "Actualizar" solo vuelve a leer la planilla: la importación desde Contabilium se hace aparte, en la otra PC.
+const ESTADO_URL = 'https://script.google.com/macros/s/AKfycbzWEtNbaokDRzxJXX5ImtOPA0vPtL2w-n6WGYBz5XysEBrfrURatnVmOkK26RzM3W3d/exec';
+
 const COL_SKU=1, COL_NAME=3, COL_BAR=8, COL_PRICE=16, COL_STOCK=20, COL_RUBRO=23, COL_SUB=24;
 
-// Cada lista = recargo sobre el precio de contado.
+// Cada lista = recargo sobre el precio de contado (n: nombre, pct: recargo, m: multiplicador, c: cuotas que admite).
 const LISTAS=[
-  ['3 Cuotas – Cuota Simple','+10%',1.10],
-  ['Cuotas MyPime 6','+20%',1.20],
-  ['Ahoramis & 6 Cuotas','+20%',1.20],
-  ['Naranja 12 / Santander 9','+25%',1.25],
-  ['20 Cuotas BNA – 12 Santander','+30%',1.30]
+  {n:'3 Cuotas – Cuota Simple',pct:'+10%',m:1.10,c:[3],d:3},
+  {n:'Cuotas MyPime 6',pct:'+20%',m:1.20,c:[6],d:6},
+  {n:'Ahoramis & 6 Cuotas',pct:'+20%',m:1.20,c:[3,6,12,15],d:6},
+  {n:'Naranja 12 / Santander 9',pct:'+25%',m:1.25,c:[5,10],d:10},
+  {n:'20 Cuotas BNA – 12 Santander',pct:'+30%',m:1.30,c:[3,6,12,18,20],d:20}
 ];
+// d = cuotas que quedan elegidas por defecto. El recargo es el mismo para cualquier cantidad de cuotas de la lista.
+// Los porcentajes (pct) quedan solo en el código: no se muestran en pantalla para que el cliente no los vea.
+// El "precio de lista" que se muestra primero es el de Ahoramis. El precio de la planilla es el de efectivo.
+const LISTA_PRECIO=LISTAS[2];
+const EFECTIVO={n:'Efectivo, débito o transferencia',pct:'',m:1,c:[]};
+// Opciones del presupuesto: la de lista primero, después efectivo y el resto.
+const OPCIONES=[LISTA_PRECIO,EFECTIVO,...LISTAS.filter(l=>l!==LISTA_PRECIO)];
+const nombreOpcion=l=>l===LISTA_PRECIO?'Precio de lista':l.n;
 
 const BUCKETS=[
   {k:'ok',max:30,label:'Hasta 30 días'},
@@ -307,6 +468,167 @@ function parseNum(s){
 }
 
 let allProducts=[], hasFechas=false, ageFilter='', lastFocus=null;
+
+// ---- Presupuesto (carrito) ----
+// Se guarda en este navegador (localStorage): sobrevive a recargar y a "Actualizar".
+const LS_KEY='dh_presupuesto_v1';
+let cart={}, optIdx=0, cuotasSel=0, byKey=new Map(), modalIdx=-1, mQtyVal=1;
+const keyOf=p=>p.sku||p.name;
+const unit=(p,l)=>Math.round(p.price*l.m);
+const lista=()=>OPCIONES[optIdx];
+const PLUS='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const addInner=q=>PLUS+(q?`<b>${q}</b>`:'');
+const clampQty=q=>Math.max(0,Math.min(999,Math.floor(q)||0));
+function saveCart(){try{localStorage.setItem(LS_KEY,JSON.stringify({cart,optIdx,cuotasSel}));}catch(e){}}
+function loadCart(){
+  try{
+    const s=JSON.parse(localStorage.getItem(LS_KEY)||'null');
+    if(!s||typeof s.cart!=='object')return;
+    cart=s.cart||{};
+    optIdx=OPCIONES[s.optIdx]?s.optIdx:0;
+    cuotasSel=s.cuotasSel||0;
+  }catch(e){}
+}
+function cartItems(){return Object.entries(cart).map(([k,q])=>({k,p:byKey.get(k),q})).filter(x=>x.p);}
+function totals(){
+  const l=lista();let n=0,t=0;
+  for(const {p,q} of cartItems()){n+=q;t+=unit(p,l)*q;}
+  return {n,t};
+}
+function cuotasOk(){
+  const c=lista().c;
+  if(!c.length)return 0;
+  if(!c.includes(cuotasSel))cuotasSel=lista().d;
+  return cuotasSel;
+}
+
+function syncRowBtn(k){
+  const p=byKey.get(k);if(!p)return;
+  const b=document.querySelector(`.row[data-i="${p.i}"] .add`);if(!b)return;
+  const q=cart[k]||0;
+  b.innerHTML=addInner(q);
+  b.classList.toggle('in',q>0);
+  b.title=q?`En el presupuesto: ${q}. Tocá para sumar otra`:'Agregar al presupuesto';
+}
+function updateFab(bump){
+  const {n,t}=totals(), fab=$('fab');
+  fab.classList.toggle('show',n>0);
+  document.body.classList.toggle('has-fab',n>0);
+  fab.innerHTML=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="n">${nf.format(n)}</span><span>Presupuesto</span><span class="t">${fmt(t)}</span>`;
+  fab.setAttribute('aria-label',`Ver presupuesto: ${n} ${n===1?'unidad':'unidades'}, ${fmt(t)}`);
+  if(bump){fab.classList.remove('bump');void fab.offsetWidth;fab.classList.add('bump');}
+}
+
+function addToCart(p,qty=1){
+  const k=keyOf(p);
+  cart[k]=clampQty((cart[k]||0)+qty);
+  saveCart();syncRowBtn(k);updateFab(true);
+  if($('cartOverlay').classList.contains('open'))renderCart();
+}
+function setQty(k,q,rebuild=true){
+  q=clampQty(q);
+  if(q<=0)delete cart[k];else cart[k]=q;
+  saveCart();syncRowBtn(k);
+  if(rebuild)renderCart();else updateTotals();
+  updateFab();
+}
+
+function renderCart(){
+  const items=cartItems(), l=lista();
+  $('cartLista').value=String(optIdx);
+  $('cartLista').dataset.opt=OPCIONES[optIdx]===LISTA_PRECIO?'lista':OPCIONES[optIdx]===EFECTIVO?'cash':'';
+  const box=$('cartItems');
+  $('cartFoot').hidden=!items.length;
+  if(!items.length){
+    box.innerHTML=`<div class="state"><h3>Todavía no hay productos</h3><p>Tocá el botón + de un producto para sumarlo al presupuesto.</p></div>`;
+    $('cartCount').textContent='';
+    return;
+  }
+  box.innerHTML=items.map(({k,p,q})=>{
+    const thumb=p.img
+      ? `<span class="thumb"><img src="${imgResized(p.img,104)}" data-file="${esc(p.img)}" width="52" height="52" loading="lazy" decoding="async" alt="" onerror="imgFallo(this)"></span>`
+      : `<span class="thumb">${ICONO_FOTO}</span>`;
+    const warn=q>p.stock?`<span class="ci-warn">${p.stock>0?'Stock: '+p.stock:'Sin stock'}</span>`:'';
+    return `<div class="ci" data-k="${esc(k)}">
+      ${thumb}
+      <div><span class="ci-name">${esc(p.name)}</span>
+        <span class="ci-sub">${p.sku?`<span>${esc(p.sku)}</span>`:''}<span class="ci-unit">${fmt(unit(p,l))} c/u</span>${warn}</span></div>
+      <div class="ci-foot">
+        <div class="qty"><button type="button" class="ci-minus" aria-label="Una unidad menos">−</button><input type="number" class="ci-q" value="${q}" min="1" max="999" inputmode="numeric" aria-label="Cantidad de ${esc(p.name)}"><button type="button" class="ci-plus" aria-label="Una unidad más">+</button></div>
+        <span class="ci-line">${fmt(unit(p,l)*q)}</span>
+      </div>
+      <button type="button" class="ci-del" aria-label="Quitar ${esc(p.name)}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>`;
+  }).join('');
+  renderCuotasBox();
+  updateTotals();
+}
+function renderCuotasBox(){
+  const l=lista(), box=$('cuotasBox');
+  if(!l.c.length){box.innerHTML=`<div class="cuotas-note">Pago único: efectivo, débito o transferencia.</div>`;return;}
+  cuotasOk();
+  box.innerHTML=`<div class="cuotas-row"><label for="cuotasSel">Pagar en cuotas</label>
+    <select id="cuotasSel">${l.c.map(n=>`<option value="${n}"${n===cuotasSel?' selected':''}>${n} cuotas</option>`).join('')}</select></div>
+    <div class="cuotas-res"><strong id="cuotaVal"></strong><span id="cuotaTot"></span></div>`;
+}
+function updateTotals(){
+  const l=lista(), {n,t}=totals();
+  document.querySelectorAll('#cartItems .ci').forEach(el=>{
+    const p=byKey.get(el.dataset.k), q=cart[el.dataset.k]||0;
+    if(!p)return;
+    el.querySelector('.ci-line').textContent=fmt(unit(p,l)*q);
+    el.querySelector('.ci-unit').textContent=fmt(unit(p,l))+' c/u';
+  });
+  $('cartTotal').textContent=fmt(t);
+  $('cartCount').textContent=`${nf.format(n)} ${n===1?'unidad':'unidades'} · ${nf.format(cartItems().length)} ${cartItems().length===1?'producto':'productos'}`;
+  if(l.c.length){
+    const c=cuotasOk(), v=$('cuotaVal');
+    if(v){v.textContent=`${c} cuotas de ${fmt(Math.round(t/c))}`;$('cuotaTot').textContent=`Total ${fmt(t)}`;}
+  }
+  updateFab();
+}
+
+function openCart(){
+  lastFocus=document.activeElement;
+  renderCart();
+  $('cartOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  $('cartClose').focus({preventScroll:true});
+}
+function closeCart(){
+  $('cartOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  if(lastFocus&&document.contains(lastFocus))lastFocus.focus({preventScroll:true});
+}
+// Texto listo para pegar en WhatsApp (*negrita*). No incluye porcentajes de recargo.
+function resumenTexto(){
+  const l=lista(), {t}=totals(), items=cartItems();
+  const efvo=items.reduce((s,{p,q})=>s+unit(p,EFECTIVO)*q,0);
+  const L=['*Presupuesto · Dilan Home*',''];
+  items.forEach(({p,q})=>{
+    L.push(`▪️ ${q} x ${p.name}`);
+    L.push(`    ${fmt(unit(p,l))} c/u = *${fmt(unit(p,l)*q)}*`);
+  });
+  L.push('');
+  if(!l.c.length){
+    L.push(`💵 *Total: ${fmt(t)}*`,'Efectivo, débito o transferencia');
+  }else{
+    L.push(`*Total: ${fmt(t)}*`,'');
+    L.push(`💳 En cuotas:`);
+    l.c.forEach(n=>L.push(`• ${n} cuotas de *${fmt(Math.round(t/n))}*`));
+    L.push('',`💵 Efectivo, débito o transferencia: *${fmt(efvo)}*`);
+  }
+  return L.join('\n');
+}
+function copiarTexto(txt){
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(txt);
+  return new Promise((ok,fail)=>{
+    const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy')?ok():fail();}catch(e){fail(e);}
+    ta.remove();
+  });
+}
 
 // ---- Días sin actualizar el precio ----
 function parseFecha(s){
@@ -359,6 +681,41 @@ function imgFallo(el){
   const t=el.parentElement;t.innerHTML=ICONO_FOTO;
 }
 
+// ---- Última carga de Contabilium ----
+let ultimaCarga=null;
+async function fetchEstado(){
+  if(!ESTADO_URL)return null;
+  try{
+    const res=await fetch(ESTADO_URL+(ESTADO_URL.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const d=new Date((await res.json()).modified);
+    return isNaN(d)?null:d;
+  }catch(e){console.warn('No se pudo leer la fecha de la última carga:',e.message);return null;}
+}
+function hace(ms){
+  const m=Math.round(ms/60000);
+  if(m<1)return 'recién';
+  if(m<60)return `hace ${m} min`;
+  const h=Math.round(m/60);
+  if(h<48)return `hace ${h} ${h===1?'hora':'horas'}`;
+  return `hace ${Math.round(h/24)} días`;
+}
+function renderExport(){
+  const el=$('lastExport');
+  if(!ultimaCarga){
+    el.classList.remove('viejo');
+    el.innerHTML='Última carga de Contabilium: <b>sin dato</b>';
+    el.title=ESTADO_URL?'No se pudo leer la fecha de la última carga.':'Todavía no está conectada la fecha de la última carga.';
+    return;
+  }
+  const ms=Date.now()-ultimaCarga.getTime();
+  const f=ultimaCarga.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})+' '+ultimaCarga.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  el.classList.toggle('viejo',ms>30*3600000);   // la tarea es diaria: más de 30 h sin cargar es señal de que falló
+  el.title=ms>30*3600000?'Pasó más de un día desde la última carga: puede que la tarea programada haya fallado.':'';
+  el.innerHTML=`Última carga de Contabilium: <b>${f}</b> · ${hace(ms)}`;
+}
+setInterval(()=>{if(ultimaCarga)renderExport();},60000);
+
 async function loadData(isRefresh=false){
   const btn=$('btnRefresh');
   btn.classList.add('spinning');
@@ -366,7 +723,8 @@ async function loadData(isRefresh=false){
     $('list').innerHTML=`<div class="state"><div class="spinner"></div><h3>Cargando productos</h3><p>Leyendo la planilla de Google Sheets.</p></div>`;
   }
   try{
-    const [res,fechas]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas()]);
+    const [res,fechas,estado]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas(),fetchEstado()]);
+    ultimaCarga=estado;
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const rows=parseCSV(await res.text());
     if(rows.length<2)throw new Error('La planilla está vacía');
@@ -390,17 +748,23 @@ async function loadData(isRefresh=false){
       });
     }
     allProducts=products;
+    byKey=new Map(products.map(p=>[keyOf(p),p]));
     hasFechas=!!fechas;
     if(!hasFechas)ageFilter='';
     const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
     $('status').innerHTML=`<span class="st-hora">Datos leídos a las ${hora}</span><span>${nf.format(products.length)} productos</span>`;
     buildFilters(isRefresh);
     render();
+    updateFab();
+    renderExport();
+    if($('cartOverlay').classList.contains('open'))renderCart();
+    return true;
   }catch(e){
     $('list').innerHTML=`<div class="state"><h3>No se pudo cargar la planilla</h3>
       <p>${esc(e.message)}. Revisá la conexión y que la planilla siga publicada en Google Sheets.</p>
       <button class="btn" type="button" id="btnRetry">Volver a intentar</button></div>`;
     $('btnRetry').addEventListener('click',()=>loadData());
+    return false;
   }finally{
     btn.classList.remove('spinning');
   }
@@ -443,13 +807,18 @@ function rowHtml(p){
   const thumb=p.img
     ? `<span class="thumb"><img src="${imgResized(p.img,112)}" data-file="${esc(p.img)}" width="56" height="56" loading="lazy" decoding="async" alt="" onerror="imgFallo(this)"></span>`
     : `<span class="thumb">${ICONO_FOTO}</span>`;
-  return `<button type="button" class="row ${a}" data-i="${p.i}">
+  const q=cart[keyOf(p)]||0;
+  return `<div class="row ${a}" role="button" tabindex="0" data-i="${p.i}">
     ${thumb}
     <span class="c-name"><span class="name">${esc(p.name)}</span><span class="meta">${p.sku?`<span class="sku">${esc(p.sku)}</span>`:''}${cat?`<span class="cat">${esc(cat)}</span>`:''}</span></span>
     <span class="c-stock"><span class="pill ${sc}">${sl}</span></span>
     <span class="c-age">${age}</span>
-    <span class="c-price">${fmt(p.price)}</span>
-  </button>`;
+    <span class="c-prices">
+      <span class="pv"><span class="pv-k">Precio de lista</span><span class="pv-list">${fmt(unit(p,LISTA_PRECIO))}</span></span>
+      <span class="pv"><span class="pv-k">Efectivo</span><span class="pv-cash">${fmt(p.price)}</span></span>
+    </span>
+    <button type="button" class="add${q?' in':''}" aria-label="Agregar ${esc(p.name)} al presupuesto" title="${q?`En el presupuesto: ${q}. Tocá para sumar otra`:'Agregar al presupuesto'}">${addInner(q)}</button>
+  </div>`;
 }
 
 function render(){
@@ -481,7 +850,7 @@ function render(){
     el.innerHTML=`<div class="state"><h3>Sin resultados</h3><p>Probá con otra palabra, o sacá algún filtro.</p></div>`;
     return;
   }
-  el.innerHTML=`<div class="cols"><span></span><span>Producto</span><span>Stock</span><span>Último cambio de precio</span><span>Efectivo</span></div>`+list.map(rowHtml).join('');
+  el.innerHTML=`<div class="cols"><span></span><span>Producto</span><span>Stock</span><span>Último cambio de precio</span><span class="h-prices"><span>Precio de lista</span><span>Efectivo</span></span><span></span></div>`+list.map(rowHtml).join('');
 }
 
 function openModal(idx){
@@ -499,7 +868,9 @@ function openModal(idx){
   if(p.sku)tags.push(`SKU ${esc(p.sku)}`);
   if(p.barcode)tags.push(`Código de barras ${esc(p.barcode)}`);
   $('mTags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
-  $('mPrice').textContent=fmt(p.price);
+  modalIdx=idx; mQtyVal=1; $('mQty').value=1; $('mAdd').textContent='Agregar al presupuesto';
+  $('mPrice').textContent=fmt(unit(p,LISTA_PRECIO));
+  $('mCash').textContent=fmt(p.price);
   const [sc,sl]=stockInfo(p.stock);
   $('mStock').innerHTML=`${p.stock>0?nf.format(p.stock)+(p.stock===1?' unidad':' unidades'):'Sin stock'} <span class="pill ${sc}" style="margin-left:6px;vertical-align:2px">${sl}</span>`;
   const ageFact=$('mAgeFact');
@@ -510,8 +881,8 @@ function openModal(idx){
     const pill=$('mAgePill');pill.textContent=ageLong(p.dias);pill.className='pill '+a;
     ageFact.style.display='';
   }else ageFact.style.display='none';
-  $('mLists').innerHTML=LISTAS.map(([label,pct,mult])=>
-    `<div class="lrow"><div class="lrow-l"><span>${label}</span><span class="lrow-pct">${pct}</span></div><span class="lrow-v">${fmt(p.price*mult)}</span></div>`).join('');
+  $('mLists').innerHTML=LISTAS.map(l=>
+    `<div class="lrow"><div class="lrow-l"><span>${nombreOpcion(l)}</span></div><span class="lrow-v">${fmt(unit(p,l))}</span></div>`).join('');
   $('overlay').classList.add('open');
   document.body.style.overflow='hidden';
   $('modal').scrollTop=0;
@@ -527,8 +898,14 @@ function closeModal(){
 $('list').addEventListener('click',e=>{
   const row=e.target.closest('.row');
   if(!row)return;
+  if(e.target.closest('.add')){addToCart(allProducts[+row.dataset.i]);return;}
   lastFocus=row;
   openModal(+row.dataset.i);
+});
+$('list').addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('row')){
+    e.preventDefault();lastFocus=e.target;openModal(+e.target.dataset.i);
+  }
 });
 $('chips').addEventListener('click',e=>{
   const c=e.target.closest('.chip');
@@ -538,7 +915,11 @@ $('chips').addEventListener('click',e=>{
 });
 $('modalClose').addEventListener('click',closeModal);
 $('overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('overlay').classList.contains('open'))closeModal();});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if($('cartOverlay').classList.contains('open'))closeCart();
+  else if($('overlay').classList.contains('open'))closeModal();
+});
 let deb;
 $('search').addEventListener('input',()=>{clearTimeout(deb);deb=setTimeout(render,180);});
 $('rubroFilter').addEventListener('change',()=>{
@@ -552,6 +933,161 @@ $('subRubroFilter').addEventListener('change',render);
 $('stockFilter').addEventListener('change',render);
 $('btnRefresh').addEventListener('click',()=>loadData(true));
 
+// ---- Presupuesto: eventos ----
+$('cartLista').innerHTML=OPCIONES.map((l,i)=>`<option value="${i}" class="${l===LISTA_PRECIO?'o-lista':l===EFECTIVO?'o-cash':''}">${esc(nombreOpcion(l))}</option>`).join('');
+$('fab').addEventListener('click',openCart);
+$('cartClose').addEventListener('click',closeCart);
+$('cartOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCart();});
+$('cartLista').addEventListener('change',e=>{optIdx=+e.target.value;cuotasOk();saveCart();renderCart();});
+$('cuotasBox').addEventListener('change',e=>{
+  if(e.target.id!=='cuotasSel')return;
+  cuotasSel=+e.target.value;saveCart();updateTotals();
+});
+$('cartItems').addEventListener('click',e=>{
+  const el=e.target.closest('.ci');if(!el)return;
+  const k=el.dataset.k;
+  if(e.target.closest('.ci-plus'))setQty(k,(cart[k]||0)+1);
+  else if(e.target.closest('.ci-minus'))setQty(k,(cart[k]||0)-1);
+  else if(e.target.closest('.ci-del'))setQty(k,0);
+});
+$('cartItems').addEventListener('input',e=>{
+  if(!e.target.classList.contains('ci-q'))return;
+  const v=parseInt(e.target.value,10);
+  if(!(v>=1))return;                       // vacío o 0 mientras escribe: se corrige al salir del campo
+  setQty(e.target.closest('.ci').dataset.k,v,false);
+});
+$('cartItems').addEventListener('change',e=>{
+  if(!e.target.classList.contains('ci-q'))return;
+  const v=parseInt(e.target.value,10);
+  setQty(e.target.closest('.ci').dataset.k,v>=1?v:(cart[e.target.closest('.ci').dataset.k]||1));
+});
+// "Vaciar" pide confirmación en el mismo botón (confirm() de la ventana no siempre se muestra).
+let clearTimer;
+function resetClearBtn(){const b=$('cartClear');clearTimeout(clearTimer);delete b.dataset.sure;b.textContent='Vaciar';b.classList.remove('danger');}
+$('cartClear').addEventListener('click',e=>{
+  const b=e.currentTarget;
+  if(!b.dataset.sure){
+    b.dataset.sure='1';b.textContent='¿Seguro? Tocá otra vez';b.classList.add('danger');
+    clearTimer=setTimeout(resetClearBtn,3000);
+    return;
+  }
+  resetClearBtn();
+  const ks=Object.keys(cart);cart={};saveCart();ks.forEach(syncRowBtn);updateFab();renderCart();
+});
+$('cartCopy').addEventListener('click',async e=>{
+  const b=e.currentTarget;
+  try{await copiarTexto(resumenTexto());b.textContent='Copiado ✓';}
+  catch(err){b.textContent='No se pudo copiar';}
+  setTimeout(()=>{b.textContent='Copiar texto';},1800);
+});
+// ---- Imagen del presupuesto (con las fotos de los productos) ----
+// WhatsApp no deja adjuntar fotos por link, así que se arma una sola imagen con todo el presupuesto.
+async function crearImagenPresupuesto(){
+  const items=cartItems();
+  if(!items.length)return null;
+  const l=lista(), {t}=totals();
+  const efvo=items.reduce((s,{p,q})=>s+unit(p,EFECTIVO)*q,0);
+  const F='"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif';
+  try{await Promise.all([document.fonts.load(`800 24px ${F}`),document.fonts.load(`600 20px ${F}`),document.fonts.load(`500 20px ${F}`)]);}catch(e){}
+  const cargar=src=>new Promise(res=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src;});
+  const [logo,...fotos]=await Promise.all([cargar('logo.webp'),...items.map(({p})=>p.img?cargar(imgResized(p.img,240)):null)]);
+
+  const W=900,PAD=36,ROW=124,HEAD=112,S=2;
+  const pie=[];
+  if(l.c.length){
+    pie.push(['h','En cuotas']);
+    l.c.forEach(n=>pie.push(['c',`${n} cuotas de`,fmt(Math.round(t/n))]));
+    pie.push(['e','Efectivo, débito o transferencia',fmt(efvo)]);
+  }else pie.push(['e','Efectivo, débito o transferencia','']);
+  const FOOT=34+70+pie.length*38+PAD;
+  const H=HEAD+items.length*ROW+FOOT;
+  const cv=document.createElement('canvas');cv.width=W*S;cv.height=H*S;
+  const c=cv.getContext('2d');c.scale(S,S);
+  c.fillStyle='#fff';c.fillRect(0,0,W,H);
+
+  // Encabezado
+  if(logo){const k=logo.naturalWidth/359, lw=315*.62;c.drawImage(logo,21*k,46*k,315*k,45*k,PAD,34,lw,45*.62);}
+  c.textBaseline='alphabetic';c.fillStyle='#1a1a1a';c.textAlign='right';
+  c.font=`800 30px ${F}`;c.fillText('Presupuesto',W-PAD,56);
+  c.font=`500 17px ${F}`;c.fillStyle='#767676';c.fillText(new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'}),W-PAD,82);
+  c.fillStyle='#1eb4b1';c.fillRect(0,HEAD-8,W,4);
+
+  // Productos
+  const txtX=PAD+96+22, maxW=W-PAD-txtX-200;
+  const lineas=(txt,max,n)=>{
+    const out=[];let cur='';
+    for(const w of txt.split(' ')){
+      const test=cur?cur+' '+w:w;
+      if(c.measureText(test).width>max&&cur){out.push(cur);cur=w;if(out.length===n)break;}else cur=test;
+    }
+    if(out.length<n&&cur)out.push(cur);
+    if(out.length===n&&out.join(' ').length<txt.length){let u=out[n-1];while(u&&c.measureText(u+'…').width>max)u=u.slice(0,-1);out[n-1]=u+'…';}
+    return out;
+  };
+  items.forEach(({p,q},i)=>{
+    const y=HEAD+i*ROW;
+    c.fillStyle='#f5f4f2';c.fillRect(PAD,y+14,96,96);
+    const im=fotos[i];
+    if(im){const r=Math.min(96/im.naturalWidth,96/im.naturalHeight),w=im.naturalWidth*r,h=im.naturalHeight*r;c.drawImage(im,PAD+(96-w)/2,y+14+(96-h)/2,w,h);}
+    c.textAlign='left';c.fillStyle='#1a1a1a';c.font=`700 21px ${F}`;
+    const ls=lineas(p.name,maxW,2);
+    ls.forEach((s,j)=>c.fillText(s,txtX,y+40+j*27));
+    c.font=`500 19px ${F}`;c.fillStyle='#545454';
+    c.fillText(`${q} x ${fmt(unit(p,l))}`,txtX,y+40+ls.length*27+6);
+    c.textAlign='right';c.fillStyle='#1a1a1a';c.font=`800 26px ${F}`;
+    c.fillText(fmt(unit(p,l)*q),W-PAD,y+68);
+    c.fillStyle='#ebebe8';c.fillRect(PAD,y+ROW-1,W-PAD*2,1);
+  });
+
+  // Total y formas de pago
+  let y=HEAD+items.length*ROW+34;
+  c.textAlign='left';c.fillStyle='#545454';c.font=`600 22px ${F}`;c.fillText('Total',PAD,y+30);
+  c.textAlign='right';c.fillStyle='#1a1a1a';c.font=`800 40px ${F}`;c.fillText(fmt(t),W-PAD,y+36);
+  y+=70;
+  pie.forEach(([tipo,a,b])=>{
+    y+=38;c.textAlign='left';
+    if(tipo==='h'){c.fillStyle='#0e8784';c.font=`700 20px ${F}`;c.fillText('💳 '+a,PAD,y);return;}
+    c.fillStyle='#545454';c.font=`500 20px ${F}`;c.fillText(a,PAD+(tipo==='c'?16:0),y);
+    c.textAlign='right';c.fillStyle=tipo==='e'?'#1a8a46':'#1a1a1a';c.font=`700 21px ${F}`;c.fillText(b,W-PAD,y);
+  });
+  return new Promise(res=>cv.toBlob(res,'image/png'));
+}
+
+// Celular: abre el menú de compartir con la imagen + el texto (se elige WhatsApp y el contacto).
+// Computadora: copia la imagen y abre WhatsApp con el texto; la imagen se pega en el chat con Ctrl+V.
+$('cartWa').addEventListener('click',async e=>{
+  const b=e.currentTarget, orig=b.innerHTML;
+  const volver=ms=>setTimeout(()=>{b.innerHTML=orig;b.disabled=false;},ms);
+  b.disabled=true;b.textContent='Preparando imagen…';
+  const txt=resumenTexto();
+  let blob=null;
+  try{blob=await crearImagenPresupuesto();}catch(err){console.warn('No se pudo armar la imagen:',err);}
+  const file=blob?new File([blob],'presupuesto-dilan-home.png',{type:'image/png'}):null;
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],text:txt});b.innerHTML=orig;b.disabled=false;return;}
+    catch(err){if(err.name==='AbortError'){b.innerHTML=orig;b.disabled=false;return;}}
+  }
+  let copiada=false;
+  if(blob&&navigator.clipboard&&window.ClipboardItem){
+    try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);copiada=true;}catch(err){}
+  }
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank','noopener');
+  b.textContent=copiada?'Imagen copiada: pegala en el chat (Ctrl+V)':'Abierto en WhatsApp (sin imagen)';
+  volver(6000);
+});
+// Cantidad y botón "Agregar" dentro del detalle del producto
+const setMQty=v=>{mQtyVal=Math.max(1,Math.min(999,Math.floor(v)||1));$('mQty').value=mQtyVal;};
+$('mQtyMinus').addEventListener('click',()=>setMQty(mQtyVal-1));
+$('mQtyPlus').addEventListener('click',()=>setMQty(mQtyVal+1));
+$('mQty').addEventListener('change',e=>setMQty(+e.target.value));
+$('mAdd').addEventListener('click',()=>{
+  const p=allProducts[modalIdx];if(!p)return;
+  addToCart(p,mQtyVal);
+  const b=$('mAdd');b.textContent=`Agregado ✓ (${cart[keyOf(p)]} en el presupuesto)`;
+  setMQty(1);
+});
+
+loadCart();
 loadData();
 </script>
 </body>
