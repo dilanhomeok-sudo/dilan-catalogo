@@ -1,0 +1,30 @@
+name: Actualizar productos de la tienda
+
+# Todos los días baja de la tienda online qué SKU están publicados (y su link) y guarda tiendanube.json.
+# También se puede lanzar a mano: pestaña Actions > "Actualizar productos de la tienda" > Run workflow.
+on:
+  schedule:
+    - cron: '0 10 * * *'   # 10:00 UTC = 07:00 en Argentina
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generar tiendanube.json
+        run: python tools/generar_tiendanube.py tiendanube.json
+      - name: Guardar
+        # El archivo incluye la fecha de la revisión, así que cambia en cada corrida: el catálogo muestra "Revisado el ...".
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tiendanube.json
+          git commit -m "Actualiza productos publicados en la tienda" || echo "Sin cambios"
+          git push

@@ -98,6 +98,7 @@ select{height:38px;padding:0 34px 0 12px;border:1px solid var(--line);border-rad
 .name{display:block;font-weight:600;font-size:14.5px;line-height:1.3}
 .meta{display:flex;flex-wrap:wrap;gap:2px 14px;margin-top:4px;font-size:12.5px;color:var(--ink-3)}
 .sku{font-weight:600;color:var(--ink-2)}
+.web{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#1b6a3b}
 /* Dos precios por producto: el de lista (Ahoramis) manda, el efectivo va al lado */
 .c-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:right;align-items:baseline}
 .pv{display:block;min-width:0}
@@ -213,6 +214,20 @@ body.has-fab .list{margin-bottom:104px}
 .fact.a-ok,.fact.a-mid,.fact.a-warn,.fact.a-old,.fact.a-vold{box-shadow:inset 5px 0 0 var(--strip);padding-left:18px}
 .fact-k{font-size:12.5px;color:var(--ink-2)}
 .fact-v{font-size:16px;font-weight:700}
+/* Estado en la tienda online (Tiendanube) */
+.shop{display:flex;align-items:center;gap:12px;margin-top:12px;padding:12px 14px;border-radius:var(--r);background:var(--soft)}
+.shop[hidden]{display:none}
+.shop-dot{flex:none;width:10px;height:10px;border-radius:50%;background:#b4b4ae}
+.shop.on{background:#e1f2e7}
+.shop.on .shop-dot{background:#2e9e5b}
+.shop-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.shop-txt b{font-size:14px;font-weight:700}
+.shop.on .shop-txt b{color:#1b6a3b}
+.shop-txt span{font-size:12px;color:var(--ink-3)}
+.shop-link{flex:none;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:var(--r);background:var(--teal-dark);color:#fff;font-weight:600;font-size:13.5px;text-decoration:none;transition:background .15s}
+.shop-link[hidden]{display:none}
+.shop-link:hover{background:#0b6f6c}
+.shop-link:focus-visible{outline:2px solid var(--teal-dark);outline-offset:2px}
 .m-lists{margin-top:22px}
 .m-lists h3{font-size:14px;font-weight:700;margin-bottom:6px}
 .lrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line-2)}
@@ -242,9 +257,8 @@ body.has-fab .list{margin-bottom:104px}
   .drawer{width:100%;height:auto;max-height:92vh;border-radius:12px 12px 0 0;animation:rise .22s ease-out}
   .ci-del{right:-6px}
   .filters{gap:8px;padding:12px 0}
-  #rubroFilter{flex:1 1 100%}
-  #subRubroFilter{flex:1 1 0;min-width:0}
-  #stockFilter{flex:0 0 118px}
+  #rubroFilter,#subRubroFilter{flex:1 1 100%}
+  #stockFilter,#webFilter{flex:1 1 0;min-width:0}
   .chips{flex-wrap:nowrap;overflow-x:auto;margin:4px -14px 0;padding:2px 14px 4px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
   .chips-k{display:none}
@@ -298,6 +312,11 @@ body.has-fab .list{margin-bottom:104px}
       <option value="con">Con stock</option>
       <option value="sin">Sin stock</option>
     </select>
+    <select id="webFilter" aria-label="Tienda online" hidden>
+      <option value="">Toda la tienda web</option>
+      <option value="si">En la web</option>
+      <option value="no">Sin publicar</option>
+    </select>
     <div class="chips" id="chips" hidden></div>
   </div>
 
@@ -350,6 +369,15 @@ body.has-fab .list{margin-bottom:104px}
         <span class="fact-v" id="mAge"></span>
         <span class="pill" id="mAgePill"></span>
       </div>
+    </div>
+
+    <div class="shop" id="mShop" hidden>
+      <span class="shop-dot" aria-hidden="true"></span>
+      <div class="shop-txt"><b id="mShopTitle"></b><span id="mShopSub"></span></div>
+      <a class="shop-link" id="mShopLink" target="_blank" rel="noopener" hidden>
+        Ver en la tienda
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </a>
     </div>
 
     <div class="m-lists">
@@ -681,6 +709,35 @@ function imgFallo(el){
   const t=el.parentElement;t.innerHTML=ICONO_FOTO;
 }
 
+// ---- Publicado en la tienda online ----
+// tiendanube.json lo genera tools/generar_tiendanube.py (una tarea de GitHub lo refresca todos los días): SKU -> link.
+// Si no se puede leer, el detalle no muestra el estado (mejor que decir "no publicado" sin saberlo).
+let tienda=null, tiendaFecha=null;
+async function fetchTienda(){
+  try{
+    const res=await fetch('tiendanube.json?t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const j=await res.json();
+    tienda=j.productos||null;
+    tiendaFecha=j.generado?new Date(j.generado):null;
+  }catch(e){console.warn('No se pudo cargar el estado de la tienda:',e.message);tienda=null;tiendaFecha=null;}
+}
+// En la lista, lo publicado se marca con un globito verde discreto; lo que no está publicado queda sin marca.
+const enWeb=p=>!!(tienda&&p.sku&&tienda[p.sku]);
+const WEB_TAG='<span class="web" title="Publicado en la tienda online"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.700 3.900 5.700 3.900 9s-1.300 6.300-3.900 9c-2.600-2.700-3.900-5.700-3.900-9S9.400 5.700 12 3z"/></svg>En la web</span>';
+function renderTienda(p){
+  const box=$('mShop');
+  if(!tienda){box.hidden=true;return;}
+  const url=p.sku?tienda[p.sku]:null;
+  const rev=tiendaFecha&&!isNaN(tiendaFecha)?'Revisado el '+tiendaFecha.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})+' '+tiendaFecha.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}):'';
+  box.hidden=false;
+  box.classList.toggle('on',!!url);
+  $('mShopTitle').textContent=url?'Publicado en la tienda online':'No está publicado en la tienda';
+  $('mShopSub').textContent=rev;
+  const a=$('mShopLink');
+  if(url){a.href=url;a.hidden=false;}else{a.removeAttribute('href');a.hidden=true;}
+}
+
 // ---- Última carga de Contabilium ----
 let ultimaCarga=null;
 async function fetchEstado(){
@@ -723,7 +780,7 @@ async function loadData(isRefresh=false){
     $('list').innerHTML=`<div class="state"><div class="spinner"></div><h3>Cargando productos</h3><p>Leyendo la planilla de Google Sheets.</p></div>`;
   }
   try{
-    const [res,fechas,estado]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas(),fetchEstado()]);
+    const [res,fechas,estado]=await Promise.all([fetch(CSV_URL+'&t='+Date.now(),{cache:'no-store'}),fetchFechas(),fetchEstado(),fetchTienda()]);
     ultimaCarga=estado;
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const rows=parseCSV(await res.text());
@@ -754,6 +811,8 @@ async function loadData(isRefresh=false){
     const hora=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
     $('status').innerHTML=`<span class="st-hora">Datos leídos a las ${hora}</span><span>${nf.format(products.length)} productos</span>`;
     buildFilters(isRefresh);
+    $('webFilter').hidden=!tienda;          // sin datos de la tienda no hay nada que filtrar
+    if(!tienda)$('webFilter').value='';
     render();
     updateFab();
     renderExport();
@@ -810,7 +869,7 @@ function rowHtml(p){
   const q=cart[keyOf(p)]||0;
   return `<div class="row ${a}" role="button" tabindex="0" data-i="${p.i}">
     ${thumb}
-    <span class="c-name"><span class="name">${esc(p.name)}</span><span class="meta">${p.sku?`<span class="sku">${esc(p.sku)}</span>`:''}${cat?`<span class="cat">${esc(cat)}</span>`:''}</span></span>
+    <span class="c-name"><span class="name">${esc(p.name)}</span><span class="meta">${p.sku?`<span class="sku">${esc(p.sku)}</span>`:''}${cat?`<span class="cat">${esc(cat)}</span>`:''}${enWeb(p)?WEB_TAG:''}</span></span>
     <span class="c-stock"><span class="pill ${sc}">${sl}</span></span>
     <span class="c-age">${age}</span>
     <span class="c-prices">
@@ -823,13 +882,15 @@ function rowHtml(p){
 
 function render(){
   const q=$('search').value.toLowerCase().trim();
-  const rubro=$('rubroFilter').value, sub=$('subRubroFilter').value, stock=$('stockFilter').value;
+  const rubro=$('rubroFilter').value, sub=$('subRubroFilter').value, stock=$('stockFilter').value, web=tienda?$('webFilter').value:'';
   const base=allProducts.filter(p=>{
     if(q&&!p.name.toLowerCase().includes(q)&&!p.sku.toLowerCase().includes(q)&&!p.barcode.includes(q))return false;
     if(rubro&&p.rubro!==rubro)return false;
     if(sub&&p.sub!==sub)return false;
     if(stock==='con'&&p.stock<=0)return false;
     if(stock==='sin'&&p.stock>0)return false;
+    if(web==='si'&&!enWeb(p))return false;
+    if(web==='no'&&enWeb(p))return false;
     return true;
   });
   const counts={ok:0,mid:0,warn:0,old:0,vold:0,none:0};
@@ -881,6 +942,7 @@ function openModal(idx){
     const pill=$('mAgePill');pill.textContent=ageLong(p.dias);pill.className='pill '+a;
     ageFact.style.display='';
   }else ageFact.style.display='none';
+  renderTienda(p);
   $('mLists').innerHTML=LISTAS.map(l=>
     `<div class="lrow"><div class="lrow-l"><span>${nombreOpcion(l)}</span></div><span class="lrow-v">${fmt(unit(p,l))}</span></div>`).join('');
   $('overlay').classList.add('open');
@@ -931,6 +993,7 @@ $('rubroFilter').addEventListener('change',()=>{
 });
 $('subRubroFilter').addEventListener('change',render);
 $('stockFilter').addEventListener('change',render);
+$('webFilter').addEventListener('change',render);
 $('btnRefresh').addEventListener('click',()=>loadData(true));
 
 // ---- Presupuesto: eventos ----
