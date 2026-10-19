@@ -269,6 +269,21 @@ body.has-fab .list{margin-bottom:104px}
   .facts{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Etiquetas: imprime directo en la TSC del local a través del servicio local (servidor_etiquetas.py) */
+.fact-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;flex-wrap:wrap}
+.btn-etq{height:32px;padding:0 10px;font-size:12.5px;background:var(--white);border-color:var(--line);color:var(--ink)}
+.btn-etq:hover{background:var(--hover);border-color:var(--ink-2)}
+.etq{margin-top:12px;border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--white)}
+.etq h3{font-size:14px;margin:0 0 10px}
+.etq label{display:block;font-size:12.5px;color:var(--ink-2);margin:0 0 4px}
+.etq input[type=text]{width:100%;height:40px;padding:0 12px;border:1px solid var(--line);border-radius:var(--r);font-size:15px;font-weight:600;text-transform:uppercase;outline:none}
+.etq input[type=text]:focus{border-color:var(--teal-dark);box-shadow:0 0 0 3px rgba(30,180,177,.25)}
+.etq-hint{font-size:12px;color:var(--ink-3);margin-top:4px}
+.etq-row{display:flex;align-items:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap}
+.etq-row .qty{height:40px}
+.etq-msg{font-size:13px;margin-top:10px;min-height:1em}
+.etq-msg.ok{color:var(--cash);font-weight:600}
+.etq-msg.err{color:#a52121}
 </style>
 </head>
 <body>
@@ -362,13 +377,39 @@ body.has-fab .list{margin-bottom:104px}
     <div class="facts">
       <div class="fact" id="mStockFact">
         <span class="fact-k">Stock disponible</span>
-        <span class="fact-v" id="mStock"></span>
+        <span class="fact-row">
+          <span class="fact-v" id="mStock"></span>
+          <button class="btn btn-etq" id="mEtq" type="button" title="Imprimir etiquetas en la TSC del local">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg>
+            Imprimir etiqueta
+          </button>
+        </span>
       </div>
       <div class="fact" id="mAgeFact" style="display:none">
         <span class="fact-k">Último cambio de precio</span>
         <span class="fact-v" id="mAge"></span>
         <span class="pill" id="mAgePill"></span>
       </div>
+    </div>
+
+    <div class="etq" id="mEtqBox" hidden>
+      <h3>Imprimir etiquetas</h3>
+      <label for="mEtqNombre">Nombre en la etiqueta</label>
+      <input type="text" id="mEtqNombre" maxlength="40" autocomplete="off">
+      <div class="etq-hint">Corto se lee mejor (unos 25 caracteres). Si no entra en una línea, se parte en dos.</div>
+      <div class="etq-row">
+        <div>
+          <label for="mEtqQty">Cantidad de etiquetas</label>
+          <div class="qty">
+            <button type="button" id="mEtqMinus" aria-label="Una etiqueta menos">−</button>
+            <input type="number" id="mEtqQty" value="1" min="1" max="200" inputmode="numeric">
+            <button type="button" id="mEtqPlus" aria-label="Una etiqueta más">+</button>
+          </div>
+        </div>
+        <button class="btn btn-add" id="mEtqGo" type="button">Imprimir</button>
+        <button class="btn btn-ghost" id="mEtqCancel" type="button">Cancelar</button>
+      </div>
+      <div class="etq-msg" id="mEtqMsg" role="status"></div>
     </div>
 
     <div class="shop" id="mShop" hidden>
@@ -930,6 +971,7 @@ function openModal(idx){
   if(p.barcode)tags.push(`Código de barras ${esc(p.barcode)}`);
   $('mTags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
   modalIdx=idx; mQtyVal=1; $('mQty').value=1; $('mAdd').textContent='Agregar al presupuesto';
+  cerrarEtq();
   $('mPrice').textContent=fmt(unit(p,LISTA_PRECIO));
   $('mCash').textContent=fmt(p.price);
   const [sc,sl]=stockInfo(p.stock);
@@ -995,6 +1037,59 @@ $('subRubroFilter').addEventListener('change',render);
 $('stockFilter').addEventListener('change',render);
 $('webFilter').addEventListener('change',render);
 $('btnRefresh').addEventListener('click',()=>loadData(true));
+
+// ---- Etiquetas: imprime directo en la TSC (servicio local en la PC del local) ----
+const ETQ_URL='http://127.0.0.1:8765';
+const MAX_ETQ=200;
+let etqEnviando=false;
+function etqQty(){const n=parseInt($('mEtqQty').value,10);return Math.min(MAX_ETQ,Math.max(1,isNaN(n)?1:n));}
+function etqBoton(){const n=etqQty();$('mEtqGo').textContent=`Imprimir ${n} etiqueta${n===1?'':'s'}`;}
+function etqMsg(t,c=''){const m=$('mEtqMsg');m.textContent=t;m.className='etq-msg'+(c?' '+c:'');}
+function cerrarEtq(){$('mEtqBox').hidden=true;etqMsg('');}
+function abrirEtq(){
+  const p=allProducts[modalIdx];if(!p)return;
+  $('mEtqNombre').value=p.name.toUpperCase().replace(/\s+/g,' ').trim();
+  $('mEtqQty').value=Math.min(MAX_ETQ,Math.max(1,p.stock||1));
+  etqBoton();etqMsg('');
+  $('mEtqBox').hidden=false;
+  $('mEtqBox').scrollIntoView({block:'nearest',behavior:'smooth'});
+  $('mEtqNombre').focus({preventScroll:true});
+}
+async function imprimirEtq(){
+  if(etqEnviando)return;
+  const p=allProducts[modalIdx];if(!p)return;
+  const nombre=$('mEtqNombre').value.toUpperCase().replace(/\s+/g,' ').trim();
+  const copias=etqQty();
+  if(!nombre){etqMsg('Escribí el nombre que va en la etiqueta.','err');return;}
+  if(!(p.price>0)){etqMsg('Este producto no tiene precio cargado.','err');return;}
+  etqEnviando=true;$('mEtqGo').disabled=true;etqMsg('Enviando a la impresora…');
+  try{
+    const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),15000);
+    const r=await fetch(ETQ_URL+'/imprimir',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sku:p.sku,nombre,efectivo:p.price,copias}),signal:ctl.signal});
+    clearTimeout(t);
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.ok)throw new Error(d.error||`Error ${r.status}`);
+    etqMsg(`Listo: ${copias} etiqueta${copias===1?'':'s'} enviada${copias===1?'':'s'} a la TSC.`,'ok');
+  }catch(e){
+    const sinServicio=e.name==='AbortError'||e instanceof TypeError;
+    etqMsg(sinServicio
+      ?'No se encontró el servicio de etiquetas en este equipo. Imprimí desde la PC del local (con la TSC) y verificá que el servicio esté iniciado.'
+      :e.message,'err');
+  }finally{etqEnviando=false;$('mEtqGo').disabled=false;}
+}
+$('mEtq').addEventListener('click',()=>{$('mEtqBox').hidden?abrirEtq():cerrarEtq();});
+$('mEtqCancel').addEventListener('click',cerrarEtq);
+$('mEtqGo').addEventListener('click',()=>{
+  const n=etqQty();
+  if(n>50&&!confirm(`Vas a imprimir ${n} etiquetas. ¿Seguro?`))return;
+  imprimirEtq();
+});
+$('mEtqMinus').addEventListener('click',()=>{$('mEtqQty').value=Math.max(1,etqQty()-1);etqBoton();});
+$('mEtqPlus').addEventListener('click',()=>{$('mEtqQty').value=Math.min(MAX_ETQ,etqQty()+1);etqBoton();});
+$('mEtqQty').addEventListener('input',etqBoton);
+$('mEtqQty').addEventListener('change',()=>{$('mEtqQty').value=etqQty();etqBoton();});
+$('mEtqNombre').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('mEtqGo').click();}});
 
 // ---- Presupuesto: eventos ----
 $('cartLista').innerHTML=OPCIONES.map((l,i)=>`<option value="${i}" class="${l===LISTA_PRECIO?'o-lista':l===EFECTIVO?'o-cash':''}">${esc(nombreOpcion(l))}</option>`).join('');
