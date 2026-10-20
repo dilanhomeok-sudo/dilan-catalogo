@@ -39,7 +39,13 @@ Búsqueda por nombre/SKU/código de barras · filtros rubro, sub-rubro, stock, t
 (precios, cantidad, listas, stock, estado en la tienda con link) · **presupuesto** (carrito en `localStorage`, clave `dh_presupuesto_v1`, con
 lista de precios elegible, cantidades, total y simulador de cuotas) · **WhatsApp**: arma una imagen (canvas) con fotos, total y cuotas;
 en celular usa el menú de compartir, en computadora copia la imagen y abre WhatsApp con el texto (se pega con Ctrl+V) ·
-**Vaciar** confirma en el mismo botón (no usar `confirm()`, a veces no se muestra) · fecha de última carga bajo "Actualizar".
+**Vaciar** confirma en el mismo botón (no usar `confirm()`, a veces no se muestra) · fecha de última carga bajo "Actualizar" ·
+**Imprimir etiqueta** en el detalle del producto (se agregó en otra sesión, commit `b93790c`): manda a imprimir a la TSC del local a través de un servicio
+local (`servidor_etiquetas.py`, `ETQ_URL=http://127.0.0.1:8765`). Solo funciona en la PC del local con ese servicio andando; desde otra PC o el celular no imprime.
+
+## Nota sobre el repo
+El repo recibe commits de otros lados (la acción diaria "Actualiza productos publicados en la tienda" y otras sesiones). Antes de editar,
+hacer `git pull --rebase origin master` y revisar `git log` para no pisar cambios.
 
 ## Límites conocidos
 - **No se puede importar de Contabilium desde la app**: no hay API y el export necesita sesión en navegador. El botón Actualizar solo
@@ -49,8 +55,8 @@ en celular usa el menú de compartir, en computadora copia la imagen y abre What
 - La imagen de WhatsApp solo incluye fotos que el navegador pueda leer desde wsrv.nl (CORS); si una falla, queda el recuadro gris.
 
 ## Cómo probar localmente
-1. `cd` a esta carpeta y correr `py -m http.server 8765` (en esta PC `python` no anda, es `py`).
-2. Abrir `http://localhost:8765/index.html`. **No abrir el archivo directo (`file://`)**: así no carga la planilla.
+1. `cd` a esta carpeta y correr `py -m http.server 8777` (en esta PC `python` no anda, es `py`). **No usar el puerto 8765**: lo usa el servicio local de etiquetas.
+2. Abrir `http://localhost:8777/index.html`. **No abrir el archivo directo (`file://`)**: así no carga la planilla.
 3. Verificar en ancho de escritorio y de celular (375 px), y que no haya errores en la consola.
 4. El panel del navegador a veces abre una pestaña `file://` al editar: cerrarla y usar la de `localhost`.
 5. Si la primera carga se queda en "Cargando productos" en el navegador de pruebas, llamar `loadData()` desde la consola.

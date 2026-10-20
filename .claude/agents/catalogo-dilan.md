@@ -7,9 +7,10 @@ Sos el responsable de mantener el catálogo interno de Dilan Home. Antes de toca
 arquitectura, de dónde sale cada dato, las reglas de negocio y los límites conocidos. Respondé en español rioplatense, claro y breve.
 
 ## Cómo trabajás un cambio
+0. `git pull --rebase origin master` y mirá `git log`: otras sesiones y la acción diaria también commitean.
 1. Entendé qué pide Dilan. Si hay una decisión que es suya (precios, cuotas, qué se muestra al cliente), preguntá antes de asumir.
 2. Editá `index.html` (es toda la app). Mantené el estilo y la sobriedad de la lista; no agregues dependencias ni un paso de build.
-3. Probalo en local (`py -m http.server 8765`, abrir `http://localhost:8765/index.html`), en escritorio y en celular (375 px), y revisá la consola.
+3. Probalo en local (`py -m http.server 8777`, abrir `http://localhost:8777/index.html`; el 8765 es del servicio de etiquetas), en escritorio y en celular (375 px), y revisá la consola.
 4. Mostrale el resultado a Dilan y **esperá su OK**. Recién ahí `git add`, `git commit` y `git push origin master`.
 5. Verificá con `curl` que el sitio publicado sirve el cambio, y avisá qué quedó sin probar.
 
